@@ -1,5 +1,5 @@
 {
-  "shop_name": "THC Room Learn",
+  "shop_name": "POM Organic Mix",
   "baht_per_point": 100,
   "points_per_visit": 1,
   "expire_days": 0,
@@ -7,5 +7,32 @@
     { "id": "disc50",  "cost": 10, "label": { "th": "ส่วนลด ฿50",  "en": "฿50 off" } },
     { "id": "disc120", "cost": 20, "label": { "th": "ส่วนลด ฿120", "en": "฿120 off" } },
     { "id": "disc350", "cost": 50, "label": { "th": "ส่วนลด ฿350", "en": "฿350 off" } }
+  ],
+  "promos": [
+    {
+      "ico": "⭐",
+      "title": { "th": "สะสมแต้ม 2 ทาง", "en": "Earn points two ways" },
+      "text":  { "th": "ทุก ฿100 = 1 แต้ม และมา 1 ครั้ง = 1 แต้ม", "en": "Every ฿100 = 1 point, and each visit = 1 point" },
+      "when":  { "th": "สมาชิกทุกคน", "en": "All members" }
+    },
+    {
+      "ico": "🎁",
+      "title": { "th": "(ตัวอย่าง) แลก 10 แต้ม รับส่วนลด ฿50", "en": "(Sample) 10 points = ฿50 off" },
+      "text":  { "th": "กดแลกได้ที่หน้าสมาชิก", "en": "Redeem on the Member tab" }
+    }
+  ],
+  "events": [
+    {
+      "ico": "🌇",
+      "title": { "th": "(ตัวอย่าง) Sunset Session", "en": "(Sample) Sunset Session" },
+      "text":  { "th": "เพลงชิล ๆ รับลมทะเลยามเย็น", "en": "Chill music and a sea breeze at dusk" },
+      "when":  { "th": "ทุกวันศุกร์ 17:00", "en": "Fridays 17:00" }
+    },
+    {
+      "ico": "🌕",
+      "title": { "th": "(ตัวอย่าง) Full Moon Week", "en": "(Sample) Full Moon Week" },
+      "text":  { "th": "กิจกรรมพิเศษสำหรับสมาชิกช่วงพระจันทร์เต็มดวง", "en": "Member specials during full moon week" },
+      "when":  { "th": "เร็ว ๆ นี้", "en": "Coming soon" }
+    }
   ]
 }

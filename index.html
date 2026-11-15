@@ -3,61 +3,59 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>THC Room Learn</title>
+<title>POM Organic Mix</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
+  /* โทนสี: ดำ ทองเมทัลลิค */
   :root {
-    --bg: #070707;
-    --card: #121110;
-    --card2: #1a1815;
-    --text: #f3ecd9;
-    --hint: #9c927a;
-    --gold: #d4af37;
-    --line: rgba(212, 175, 55, .28);
+    --bg: #070707; --card: #131210; --card2: #1e1b16;
+    --text: #f3ecd9; --hint: #9c927a;
+    --gold: #d4af37; --gold-soft: #f6e08a;
     --metal: linear-gradient(135deg, #8a6a1f 0%, #f6e08a 28%, #c9a23f 50%, #fff3b0 72%, #a47a1e 100%);
-    --ink: #1a1304;
+    --ink: #1a1304;   /* ตัวหนังสือบนพื้นทอง */
+    --line: rgba(212, 175, 55, .28);
+    --shadow: 0 6px 18px rgba(0, 0, 0, .55);
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; background: var(--bg); color: var(--text);
     font-family: -apple-system, "Segoe UI", "Noto Sans Thai", "Leelawadee UI", Roboto, sans-serif;
     font-size: 16px; line-height: 1.55; }
-  body { padding: 0 16px 40px; max-width: 640px; margin: 0 auto;
-    background: radial-gradient(120% 50% at 50% 0%, #1c1608 0%, var(--bg) 60%) no-repeat var(--bg); min-height: 100vh; }
-  .gold { background: var(--metal); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  header { display: flex; align-items: center; justify-content: space-between; padding: 14px 0 10px;
-    position: sticky; top: 0; background: rgba(7, 7, 7, .92); backdrop-filter: blur(8px); z-index: 5;
-    border-bottom: 1px solid var(--line); margin-bottom: 12px; }
-  .brand { font-weight: 800; font-size: 17px; letter-spacing: .08em; text-transform: uppercase; }
+  body { padding: 0 16px 104px; max-width: 640px; margin: 0 auto; min-height: 100vh; }
+  .gold { background: var(--metal); -webkit-background-clip: text; background-clip: text; color: transparent; }   /* หัวข้อและตัวเลขเด่น */
+  header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; margin: 0 -16px;
+    position: sticky; top: 0; background: #0d0b07; z-index: 5; }
+  .brand { font-weight: 800; font-size: 17px; letter-spacing: .06em; }
   .lang { display: flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
-  .lang button { background: none; border: 0; color: var(--hint); padding: 6px 12px; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .lang button { background: none; border: 0; color: var(--hint); padding: 5px 12px; font-size: 13px; font-weight: 700; cursor: pointer; }
   .lang button.on { background: var(--metal); color: var(--ink); }
   .back { background: none; border: 0; color: var(--gold); font-size: 15px; padding: 4px 0 10px; cursor: pointer; font-family: inherit; }
   h1 { font-size: 24px; margin: 8px 0 4px; line-height: 1.25; text-align: center; letter-spacing: .02em; }
   h2 { font-size: 16px; margin: 20px 0 8px; color: var(--gold); letter-spacing: .04em; }
   p.sub { color: var(--hint); margin: 0 0 16px; font-size: 14px; text-align: center; }
-  .rule { height: 1px; background: var(--metal); opacity: .6; width: 72px; margin: 10px auto 16px; }
-  .view { display: none; } .view.on { display: block; }
+  .rule { height: 2px; border-radius: 2px; background: var(--metal); width: 64px; margin: 8px auto 16px; }
+  .view { display: none; padding-top: 14px; } .view.on { display: block; }
+  #v-home { padding-top: 0; }
 
   /* ตารางเมนู / tile grids */
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
-  .tile { background: linear-gradient(160deg, var(--card2), var(--card)); color: var(--text); border: 1px solid var(--line);
-    border-radius: 16px; padding: 20px 10px; text-align: center; cursor: pointer; font: inherit;
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 128px;
-    box-shadow: inset 0 1px 0 rgba(255, 243, 176, .08), 0 6px 18px rgba(0, 0, 0, .5); }
-  .tile:active { transform: scale(.98); border-color: var(--gold); }
+  .tile { background: var(--card); color: var(--text); border: 1px solid var(--line);
+    border-radius: 18px; padding: 20px 10px; text-align: center; cursor: pointer; font: inherit;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 128px; }
+  .tile:active { opacity: .85; }
   .tile.wide { grid-column: 1 / -1; }
-  .tile .ico { font-size: 32px; width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center;
-    background: radial-gradient(circle at 30% 25%, #3a2f12, #0d0b06); border: 1px solid var(--line); }
-  .tile b { font-size: 16px; font-weight: 700; letter-spacing: .03em; }
+  .tile .ico { font-size: 34px; width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center; background: var(--card2); }
+  .tile b { font-size: 17px; font-weight: 700; }
   .tile small { color: var(--hint); font-size: 12px; }
+  /* หมวดสินค้า: กล่องดำขอบทอง */
+  .tile.cat { background: linear-gradient(160deg, var(--card2), var(--card)); box-shadow: var(--shadow); }
+  .tile.cat .ico { background: radial-gradient(circle at 30% 25%, #3a2f12, #0d0b06); border: 1px solid var(--line); }
 
   /* รายการสินค้า / item cards */
   .item { background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; cursor: pointer;
     color: var(--text); font: inherit; padding: 0; text-align: center; display: flex; flex-direction: column; }
-  .item:active { transform: scale(.98); border-color: var(--gold); }
-  .pic { aspect-ratio: 1 / 1; width: 100%; display: grid; place-items: center; font-size: 54px;
-    background: radial-gradient(circle at 50% 35%, #2e260f 0%, #0c0a05 75%); border-bottom: 1px solid var(--line); }
+  .item:active { opacity: .85; }
+  .pic { aspect-ratio: 1 / 1; width: 100%; display: grid; place-items: center; font-size: 54px; background: var(--card2); }
   .pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .item .nm { font-weight: 700; font-size: 14px; padding: 10px 8px 2px; line-height: 1.3; }
   .item .pr { font-weight: 800; font-size: 15px; padding: 0 8px 12px; }
@@ -77,11 +75,63 @@
   .tags { display: flex; flex-wrap: wrap; gap: 8px; }
   .tags span { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 5px 12px; font-size: 13px; }
 
+  /* แบรนด์ หน้าหลัก แถบเมนูล่าง / brand, home, bottom tab bar */
+  .brand { display: flex; align-items: center; gap: 8px; }
+  .brand img { height: 30px; border-radius: 8px; background: #fff; padding: 2px 5px; display: block; }
+  .logo { background: #fff; border-radius: 22px; padding: 10px 14px; max-width: 230px; margin: 6px auto 12px;
+    border: 2px solid var(--gold); box-shadow: 0 8px 22px rgba(0, 0, 0, .6); }
+  .logo img { width: 100%; display: block; }
+  .hero-home { background: linear-gradient(180deg, #0d0b07 0%, #1c1608 100%); margin: 0 -16px; padding: 4px 16px 20px;
+    border-radius: 0 0 22px 22px; border-bottom: 1px solid var(--line); }
+  .facts { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .facts span { border: 1px solid var(--line); color: var(--gold-soft); border-radius: 999px; padding: 4px 11px; font-size: 13px; }
+  .points { margin-top: 14px; background: var(--metal); color: var(--ink); border-radius: 16px; padding: 12px 16px; box-shadow: var(--shadow); }
+  .points b { display: block; font-size: 20px; }
+  .points small { font-size: 12px; opacity: .85; }
+  /* แถบเลื่อนโปรโมชั่น: ปัดซ้าย–ขวาได้ และเลื่อนเองทุก 4 วินาที */
+  .slider { position: relative; display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory;
+    margin: 0 -16px; padding: 2px 16px 6px; scrollbar-width: none; }
+  .slider::-webkit-scrollbar { display: none; }
+  .slide { flex: 0 0 86%; scroll-snap-align: center; border-radius: 18px; padding: 16px; min-height: 122px;
+    display: flex; gap: 14px; align-items: center; box-shadow: var(--shadow);
+    background: linear-gradient(135deg, #2a2110, #0f0d08); color: var(--text); border: 1px solid var(--line); }
+  .slide.s0 { background: var(--metal); color: var(--ink); border: 0; }           /* ใบแรก: ทองเต็มใบ */
+  .slide.s2 { background: linear-gradient(135deg, #4a3a16, #1a140a); }
+  .slide .sico { font-size: 40px; flex: none; width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center;
+    background: rgba(0, 0, 0, .2); border: 1px solid rgba(212, 175, 55, .4); }
+  .slide b { display: block; font-size: 17px; line-height: 1.3; color: var(--gold-soft); }
+  .slide.s0 b { color: inherit; }
+  .slide p { margin: 3px 0 0; font-size: 13px; opacity: .92; }
+  .slide .when { display: inline-block; margin-top: 8px; font-size: 11px; font-weight: 800; border-radius: 999px; padding: 1px 10px;
+    border: 1px solid currentColor; }
+  .dots { display: flex; justify-content: center; gap: 6px; margin-top: 6px; min-height: 7px; }
+  .dots i { width: 7px; height: 7px; border-radius: 4px; background: var(--line); transition: width .2s; }
+  .dots i.on { width: 18px; background: var(--gold); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    padding: 14px; margin-bottom: 10px; display: flex; gap: 12px; align-items: flex-start; }
+  .card .cico { font-size: 24px; flex: none; width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; background: var(--card2); }
+  .card b { display: block; font-size: 15px; }
+  .card p { margin: 2px 0 0; font-size: 13px; color: var(--hint); }
+  .card .when { display: inline-block; margin-top: 7px; font-size: 11px; font-weight: 800; color: var(--ink);
+    background: var(--metal); border-radius: 999px; padding: 1px 10px; }
+  .seg { display: flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; margin: 0 auto 16px; max-width: 340px; }
+  .seg button { flex: 1; background: none; border: 0; color: var(--hint); padding: 9px 6px; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .seg button.on { background: var(--metal); color: var(--ink); }
+  .tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; display: flex; justify-content: center;
+    background: #0d0b07; border-top: 1px solid var(--line);
+    padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); }
+  .tabbar button { flex: 1; max-width: 150px; background: none; border: 0; color: var(--hint); font: inherit; font-size: 11px;
+    display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 0; cursor: pointer; }
+  .tabbar span { font-size: 21px; line-height: 1.2; filter: grayscale(1) opacity(.55); }
+  .tabbar b { font-weight: 700; }
+  .tabbar button.on { color: var(--gold); }
+  .tabbar button.on span { filter: none; }
+
   /* บัตรสมาชิก / member card */
-  .mcard { background: var(--metal); color: var(--ink); border-radius: 18px; padding: 18px; margin-top: 6px;
+  .mcard { background: var(--metal); color: var(--ink); border-radius: 20px; padding: 18px; margin-top: 6px;
     box-shadow: 0 10px 28px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .5); }
   .mtop { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; font-weight: 800; letter-spacing: .14em; }
-  .mtype { background: var(--ink); color: #f6e08a; border-radius: 999px; padding: 3px 10px; letter-spacing: .02em; }
+  .mtype { background: var(--ink); color: var(--gold-soft); border-radius: 999px; padding: 3px 10px; letter-spacing: .02em; }
   .mname { font-size: 20px; font-weight: 800; margin: 16px 0 0; word-break: break-word; }
   .mpts { font-size: 14px; font-weight: 600; }
   .mpts b { font-size: 40px; font-weight: 800; margin-right: 6px; }
@@ -92,8 +142,6 @@
   #qr:empty { display: none; }
   .mid { font-size: 20px; font-weight: 800; letter-spacing: .08em; }
   .tile.info { cursor: default; min-height: 0; padding: 16px 8px; }
-  .tile.mine { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold), 0 6px 18px rgba(0, 0, 0, .5); }
-  .tile .tag { font-size: 11px; background: var(--metal); color: var(--ink); border-radius: 999px; padding: 1px 9px; font-weight: 800; }
   .reward { display: flex; align-items: center; gap: 10px; background: var(--card); border: 1px solid var(--line);
     border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; }
   .reward div { flex: 1; font-size: 14px; }
@@ -145,7 +193,7 @@
 
 <div id="gate">
   <div class="gbox">
-    <div class="big">🌿</div>
+    <div class="logo"><img src="logo.jpg" alt="POM Organic Mix"></div>
     <h1 class="gold" data-i18n="gateTitle"></h1>
     <p class="sub" data-i18n="gateText"></p>
     <button class="btn" id="gateYes" data-i18n="gateYes"></button>
@@ -157,7 +205,7 @@
 </div>
 
 <header>
-  <div class="brand gold">THC Room Learn</div>
+  <div class="brand"><img src="logo.jpg" alt=""><span class="gold">POM Organic Mix</span></div>
   <div class="lang">
     <button data-lang="th">ไทย</button><button data-lang="en">EN</button>
   </div>
@@ -165,21 +213,21 @@
 
 <!-- HOME -->
 <div class="view on" id="v-home">
-  <h1 class="gold" data-i18n="homeTitle"></h1>
-  <div class="rule"></div>
-  <p class="sub" data-i18n="homeSub"></p>
-  <div class="grid">
-    <button class="tile" data-go="cats"><div class="ico">🌸</div><b class="gold" data-i18n="mFlowers"></b></button>
-    <button class="tile" data-go="member"><div class="ico">⭐</div><b class="gold" data-i18n="mMember"></b><small id="homePts"></small></button>
-    <button class="tile" data-go="pt33"><div class="ico">📋</div><b class="gold" data-i18n="mPt33"></b></button>
-    <button class="tile" data-go="guide"><div class="ico">🎧</div><b class="gold" data-i18n="mGuide"></b></button>
+  <div class="hero-home">
+    <div class="logo"><img src="logo.jpg" alt="POM Organic Mix"></div>
+    <div class="facts"><span data-i18n="fact1"></span><span data-i18n="fact2"></span><span>20+</span></div>
   </div>
+  <div class="points"><b id="homePts"></b><small data-i18n="pointsGo"></small></div>
+  <h2 data-i18n="promoTitle"></h2>
+  <div class="slider" id="promos"></div>
+  <div class="dots" id="promoDots"></div>
+  <h2 data-i18n="eventTitle"></h2>
+  <div id="events"></div>
   <div class="note c" data-i18n="homeNote"></div>
 </div>
 
 <!-- CATEGORIES -->
 <div class="view" id="v-cats">
-  <button class="back" data-go="home" data-i18n="back"></button>
   <h1 class="gold" data-i18n="mFlowers"></h1>
   <div class="rule"></div>
   <input type="text" class="search" id="search" data-i18n-ph="searchPh" autocomplete="off">
@@ -190,7 +238,6 @@
 
 <!-- MEMBER -->
 <div class="view" id="v-member">
-  <button class="back" data-go="home" data-i18n="back"></button>
   <h1 class="gold" data-i18n="mMember"></h1>
   <div class="rule"></div>
   <div id="member"></div>
@@ -211,11 +258,15 @@
   <div id="detail"></div>
 </div>
 
-<!-- PT33 -->
-<div class="view" id="v-pt33">
-  <button class="back" data-go="home" data-i18n="back"></button>
-  <h1 class="gold" data-i18n="ptTitle"></h1>
+<!-- LEARN: คู่มือเสียง + ใบ ภ.ท.33 -->
+<div class="view" id="v-learn">
+  <h1 class="gold" data-i18n="learnTitle"></h1>
   <div class="rule"></div>
+  <div class="seg">
+    <button data-seg="guide" class="on" data-i18n="segGuide"></button>
+    <button data-seg="pt33" data-i18n="segPt33"></button>
+  </div>
+  <div id="p-pt33" style="display:none">
   <p class="sub" data-i18n="ptSub"></p>
   <div class="note" data-i18n="ptNote"></div>
   <form id="ptForm" novalidate>
@@ -236,19 +287,22 @@
     <p class="sub" style="margin-top:12px" data-i18n="ptDoneText"></p>
     <button class="btn ghost" id="ptAgain" data-i18n="ptAgain"></button>
   </div>
-</div>
-
-<!-- GUIDE -->
-<div class="view" id="v-guide">
-  <button class="back" data-go="home" data-i18n="back"></button>
-  <h1 class="gold" data-i18n="gTitle"></h1>
-  <div class="rule"></div>
+  </div>
+  <div id="p-guide">
   <p class="sub" data-i18n="gSub"></p>
   <div id="topics"></div>
   <div class="note" data-i18n="gNote"></div>
+  </div>
 </div>
 
 <footer data-i18n="footer"></footer>
+
+<nav class="tabbar">
+  <button data-go="home" data-tab="home"><span>🏠</span><b data-i18n="tabHome"></b></button>
+  <button data-go="cats" data-tab="menu"><span>🌸</span><b data-i18n="tabMenu"></b></button>
+  <button data-go="learn" data-tab="learn"><span>📚</span><b data-i18n="tabLearn"></b></button>
+  <button data-go="member" data-tab="member"><span>⭐</span><b data-i18n="tabMember"></b></button>
+</nav>
 
 <script>
 /* ============================================================
@@ -260,12 +314,15 @@ const I18N = {
     gateText: "เนื้อหานี้สำหรับผู้ที่มีอายุ 20 ปีขึ้นไปเท่านั้น",
     gateYes: "ใช่ ฉันอายุ 20 ปีขึ้นไป", gateNo: "ไม่ใช่",
     gateBlocked: "ขออภัย เนื้อหานี้สำหรับผู้ที่มีอายุ 20 ปีขึ้นไปเท่านั้น",
-    homeTitle: "ห้องเรียนรู้กัญชา", homeSub: "เลือกเมนู",
-    mFlowers: "ดอกไม้ออแกนิค", mPt33: "ใบ ภ.ท.33", mGuide: "ฟังวิธีใช้",
+    tabHome: "หน้าหลัก", tabMenu: "เมนู", tabLearn: "เรียนรู้", tabMember: "สมาชิก",
+    fact1: "🏝️ บรรยากาศเกาะ", fact2: "🌐 ออนไลน์", pointsGo: "ดูบัตรและแลกแต้มได้ที่แท็บ “สมาชิก” ด้านล่าง", joinMember: "⭐ สมาชิกสะสมแต้ม", promoTitle: "🎁 โปรโมชั่น", eventTitle: "🎉 กิจกรรม",
+    noPromo: "ยังไม่มีโปรโมชั่นในตอนนี้", noEvent: "ยังไม่มีกิจกรรมในตอนนี้",
+    learnTitle: "เรียนรู้", segGuide: "🎧 วิธีใช้", segPt33: "📋 ใบ ภ.ท.33",
+    mFlowers: "ดอกไม้ออแกนิค",
     homeNote: "เพื่อการศึกษา · ไม่มีการสั่งซื้อผ่านแอพ · 20+",
     back: "‹ หน้าหลัก", backCats: "‹ หมวดหมู่", backList: "‹ รายการ",
     items: "รายการ", searchPh: "🔍 ค้นหาสายพันธุ์ กลิ่น เอฟเฟค", searchNone: "ไม่พบรายการที่ค้นหา",
-    mMember: "สมาชิก", ptsWord: "แต้ม", memberWord: "MEMBER", noName: "สมาชิก THC Room",
+    mMember: "สมาชิก", ptsWord: "แต้ม", memberWord: "MEMBER", noName: "สมาชิก POM",
     since: "เริ่มเป็นสมาชิก", until: "แต้มหมดอายุ", noSince: "หลังได้แต้มครั้งแรก",
     notLinked: "เปิดแอพจากปุ่มของบอทใน Telegram เพื่อดูแต้มของคุณ",
     codeTitle: "รหัสสมาชิก", codeHint: "แสดงรหัสนี้ให้พนักงานทุกครั้งเพื่อรับแต้ม",
@@ -294,19 +351,22 @@ const I18N = {
     gTitle: "ฟังวิธีใช้", gSub: "กด ▶ เพื่อฟัง หรืออ่านเนื้อหาด้านล่าง",
     gNote: "ข้อมูลนี้ไม่ใช่คำแนะนำทางการแพทย์ หากมีโรคประจำตัวหรือใช้ยาอยู่ ควรปรึกษาแพทย์ก่อนใช้",
     noVoice: "อุปกรณ์นี้ไม่รองรับการอ่านออกเสียง กรุณาอ่านเนื้อหาแทน",
-    footer: "THC ROOM LEARN · 20+"
+    footer: "POM ORGANIC MIX · 🏝️ · 20+"
   },
   en: {
     gateTitle: "Are you 20 or older?",
     gateText: "This content is intended only for people aged 20 and over.",
     gateYes: "Yes, I am 20 or older", gateNo: "No",
     gateBlocked: "Sorry, this content is only for people aged 20 and over.",
-    homeTitle: "Cannabis Learning Room", homeSub: "Choose a menu",
-    mFlowers: "Organic Flowers", mPt33: "PT.33 Form", mGuide: "Audio Guide",
+    tabHome: "Home", tabMenu: "Menu", tabLearn: "Learn", tabMember: "Member",
+    fact1: "🏝️ Island vibes", fact2: "🌐 Online", pointsGo: "See your card and rewards in the Member tab below", joinMember: "⭐ Member points", promoTitle: "🎁 Promotions", eventTitle: "🎉 Events",
+    noPromo: "No promotions right now", noEvent: "No events right now",
+    learnTitle: "Learn", segGuide: "🎧 How to use", segPt33: "📋 PT.33 form",
+    mFlowers: "Organic Flowers",
     homeNote: "Education only · No ordering in the app · 20+",
     back: "‹ Home", backCats: "‹ Categories", backList: "‹ List",
     items: "items", searchPh: "🔍 Search strain, flavor, effect", searchNone: "Nothing matches your search",
-    mMember: "Member", ptsWord: "points", memberWord: "MEMBER", noName: "THC Room member",
+    mMember: "Member", ptsWord: "points", memberWord: "MEMBER", noName: "POM member",
     since: "Member since", until: "Points expire", noSince: "after your first point",
     notLinked: "Open the app from the bot's button in Telegram to see your points.",
     codeTitle: "Member code", codeHint: "Show this code to staff every time to collect points",
@@ -335,7 +395,7 @@ const I18N = {
     gTitle: "Audio Guide", gSub: "Tap ▶ to listen, or read the text below",
     gNote: "This is not medical advice. If you have a medical condition or take medication, talk to a doctor first.",
     noVoice: "This device does not support read-aloud. Please read the text instead.",
-    footer: "THC ROOM LEARN · 20+"
+    footer: "POM ORGANIC MIX · 🏝️ · 20+"
   }
 };
 
@@ -346,12 +406,19 @@ const I18N = {
       price: ราคา (บาท)   unit: "unitG" ต่อกรัม | "unitPc" ต่อชิ้น | "unitRoll" ต่อมวน
    ============================================================ */
 const CATS = [
-  { id: "sativa",  label: "Sativa",   ico: "☀️" },
-  { id: "indica",  label: "Indica",   ico: "🌙" },
-  { id: "hybrid",  label: "Hybrid",   ico: "⚖️" },
-  { id: "edible",  label: "Edible",   ico: "🍪" },
-  { id: "preroll", label: "Pre-roll", ico: "🚬" }
+  { id: "sativa",  label: "Sativa",   ico: "🌅", name: { th: "ตะวันขึ้น",   en: "Sunrise" } },
+  { id: "indica",  label: "Indica",   ico: "🌙", name: { th: "แสงจันทร์",   en: "Moonlight" } },
+  { id: "hybrid",  label: "Hybrid",   ico: "🌇", name: { th: "ตะวันตกดิน", en: "Sunset" } },
+  { id: "edible",  label: "Edible",   ico: "🍪", name: { th: "ของว่างริมหาด", en: "Beach Bites" } },
+  { id: "preroll", label: "Pre-roll", ico: "🌴", name: { th: "มวนพร้อมชิล", en: "Easy Roll" } }
 ];
+
+/* ============================================================
+   2.2) หน้าหลัก: โปรโมชั่นและกิจกรรม
+   ของจริงแก้ที่ไฟล์ config.json ("promos" และ "events") ค่าด้านล่างใช้เมื่อโหลด config.json ไม่ได้
+   แต่ละรายการ: { ico, title: {th,en}, text: {th,en}, when: {th,en} (ไม่บังคับ) }
+   ============================================================ */
+const HOME = { promos: [], events: [] };
 const PRODUCTS = {
   sativa: [
     { name: "Sour Diesel", img: null, price: 450, unit: "unitG", thc: "20–25%", cbd: "<1%",
@@ -528,7 +595,7 @@ let lang = store.get("lang")
   || ((navigator.language || "").toLowerCase().startsWith("th") ? "th" : null)
   || (inTelegram ? "en" : "th");
 let view = "home", curCat = "sativa", curItem = 0;
-const PARENT = { cats: "home", list: "cats", detail: "list", pt33: "home", guide: "home", member: "home" };
+const PARENT = { list: "cats", detail: "list" };   // หน้าที่มีปุ่มย้อนกลับ หน้าอื่นเป็นแท็บ
 const pick = (v) => (v && typeof v === "object" && !Array.isArray(v)) ? v[lang] : v;
 const t = (k) => I18N[lang][k];
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -538,15 +605,59 @@ const priceHtml = (p) => `฿${Number(p.price).toLocaleString("en-US")} <small>$
 
 function renderCats() {
   $("#catGrid").innerHTML = CATS.map((c, i) => `
-    <button class="tile${i === CATS.length - 1 && CATS.length % 2 ? " wide" : ""}" data-cat="${c.id}">
-      <div class="ico">${c.ico}</div><b class="gold">${c.label}</b>
-      <small>${PRODUCTS[c.id].length} ${t("items")}</small>
+    <button class="tile cat c${i % 5}${i === CATS.length - 1 && CATS.length % 2 ? " wide" : ""}" data-cat="${c.id}">
+      <div class="ico">${c.ico}</div><b class="gold">${esc(pick(c.name))}</b>
+      <small>${c.label} · ${PRODUCTS[c.id].length} ${t("items")}</small>
     </button>`).join("");
 }
+function renderHome() {
+  const cards = (list, emptyKey) => list.length ? list.map((x) => `
+    <div class="card"><div class="cico">${esc(x.ico || "🌿")}</div><div>
+      <b class="gold">${esc(pick(x.title))}</b><p>${esc(pick(x.text) || "")}</p>
+      ${x.when ? `<span class="when">${esc(pick(x.when))}</span>` : ""}
+    </div></div>`).join("") : `<div class="empty" style="margin:6px 0 14px">${t(emptyKey)}</div>`;
+  $("#promos").innerHTML = HOME.promos.length ? HOME.promos.map((x, i) => `
+    <div class="slide s${i % 4}"><div class="sico">${esc(x.ico || "🎁")}</div><div>
+      <b>${esc(pick(x.title))}</b><p>${esc(pick(x.text) || "")}</p>
+      ${x.when ? `<span class="when">${esc(pick(x.when))}</span>` : ""}
+    </div></div>`).join("") : `<div class="empty" style="margin:6px auto 14px">${t("noPromo")}</div>`;
+  $("#promoDots").innerHTML = HOME.promos.length > 1 ? HOME.promos.map(() => "<i></i>").join("") : "";
+  $("#promos").scrollLeft = 0;
+  promoDots();
+  $("#events").innerHTML = cards(HOME.events, "noEvent");
+}
+
+/* ---- แถบเลื่อนโปรโมชั่น / promo slider ---- */
+let promoHold = 0;   // หยุดเลื่อนเองชั่วคราวหลังลูกค้าแตะ
+function promoIndex() {
+  const s = $("#promos"), mid = s.scrollLeft + s.clientWidth / 2;
+  let best = 0, dist = Infinity;
+  $$("#promos .slide").forEach((k, i) => {
+    const d = Math.abs(k.offsetLeft + k.offsetWidth / 2 - mid);
+    if (d < dist) { dist = d; best = i; }
+  });
+  return best;
+}
+function promoGo(i) {
+  const s = $("#promos"), k = $$("#promos .slide")[i];
+  if (k) s.scrollTo({ left: k.offsetLeft - (s.clientWidth - k.offsetWidth) / 2, behavior: "smooth" });
+}
+function promoDots() {
+  const i = promoIndex();
+  $$("#promoDots i").forEach((d, n) => d.classList.toggle("on", n === i));
+}
+$("#promos").addEventListener("scroll", () => requestAnimationFrame(promoDots), { passive: true });
+["touchstart", "pointerdown"].forEach((ev) =>
+  $("#promos").addEventListener(ev, () => { promoHold = Date.now() + 8000; }, { passive: true }));
+setInterval(() => {
+  const n = $$("#promos .slide").length;
+  if (view !== "home" || n < 2 || Date.now() < promoHold || document.hidden) return;
+  promoGo((promoIndex() + 1) % n);
+}, 4000);
 function renderList() {
   const c = cat();
-  $("#listTitle").textContent = c.label;
-  $("#listSub").textContent = `${PRODUCTS[c.id].length} ${t("items")}`;
+  $("#listTitle").textContent = pick(c.name);
+  $("#listSub").textContent = `${c.label} · ${PRODUCTS[c.id].length} ${t("items")}`;
   $("#itemGrid").innerHTML = PRODUCTS[c.id].map((p, i) => itemCard(p, c, i)).join("");
 }
 function itemCard(p, c, i) {
@@ -561,7 +672,7 @@ function renderSearch() {
   const hits = [];
   if (q) CATS.forEach((c) => PRODUCTS[c.id].forEach((p, i) => {
     const name = typeof p.name === "object" ? p.name.th + " " + p.name.en : p.name;
-    const hay = [name, c.label, p.parents || "", ...p.effects.th, ...p.effects.en, ...p.flavors.th, ...p.flavors.en].join(" ").toLowerCase();
+    const hay = [name, c.label, c.name.th, c.name.en, p.parents || "", ...p.effects.th, ...p.effects.en, ...p.flavors.th, ...p.flavors.en].join(" ").toLowerCase();
     if (hay.includes(q)) hits.push(itemCard(p, c, i));
   }));
   $("#catGrid").style.display = q ? "none" : "";
@@ -581,10 +692,10 @@ function bkkDate(sec) {
 function renderMember() {
   const name = member.n || (tgUser ? [tgUser.first_name, tgUser.last_name].filter(Boolean).join(" ") : "") || t("noName");
   const uid = tgUser ? String(tgUser.id) : "";
-  $("#homePts").textContent = linked ? `${myPoints.toLocaleString("en-US")} ${t("ptsWord")}` : "";
+  $("#homePts").textContent = linked ? `⭐ ${myPoints.toLocaleString("en-US")} ${t("ptsWord")}` : t("joinMember");
   $("#member").innerHTML = `
     <div class="mcard">
-      <div class="mtop"><span>THC ROOM</span><span class="mtype">${t("memberWord")}</span></div>
+      <div class="mtop"><span>POM ORGANIC MIX</span><span class="mtype">${t("memberWord")}</span></div>
       <div class="mname">${esc(name)}</div>
       <div class="mpts"><b>${myPoints.toLocaleString("en-US")}</b>${t("ptsWord")}</div>
       <div class="mdates">
@@ -661,7 +772,14 @@ function applyLang() {
   $$("[data-i18n]").forEach((el) => { el.textContent = t(el.dataset.i18n); });
   $$("[data-i18n-ph]").forEach((el) => { el.placeholder = t(el.dataset.i18nPh); });
   $$(".lang button").forEach((b) => b.classList.toggle("on", b.dataset.lang === lang));
-  renderCats(); renderList(); renderDetail(); renderSearch(); renderMember(); renderSymptoms(); renderTopics();
+  renderHome(); renderCats(); renderList(); renderDetail(); renderSearch(); renderMember(); renderSymptoms(); renderTopics();
+}
+const TAB_OF = { home: "home", cats: "menu", list: "menu", detail: "menu", learn: "learn", member: "member" };
+function seg(which) {   // สลับ วิธีใช้ / ใบ ภ.ท.33 ในหน้าเรียนรู้
+  stopAudio();
+  $$(".seg button").forEach((b) => b.classList.toggle("on", b.dataset.seg === which));
+  $("#p-guide").style.display = which === "guide" ? "" : "none";
+  $("#p-pt33").style.display = which === "pt33" ? "" : "none";
 }
 
 function go(v) {
@@ -670,8 +788,9 @@ function go(v) {
   if (v === "list") renderList();
   if (v === "detail") renderDetail();
   $$(".view").forEach((el) => el.classList.toggle("on", el.id === "v-" + v));
+  $$(".tabbar button").forEach((b) => b.classList.toggle("on", b.dataset.tab === TAB_OF[v]));
   window.scrollTo(0, 0);
-  if (tg && tg.BackButton) { v === "home" ? tg.BackButton.hide() : tg.BackButton.show(); }
+  if (tg && tg.BackButton) { PARENT[v] ? tg.BackButton.show() : tg.BackButton.hide(); }
   if (tg && tg.HapticFeedback) { try { tg.HapticFeedback.selectionChanged(); } catch (e) {} }
 }
 
@@ -746,9 +865,10 @@ $("#ptAgain").addEventListener("click", () => {
 
 /* ---- events ---- */
 document.addEventListener("click", (e) => {
-  const el = e.target.closest("[data-go],[data-lang],[data-cat],[data-item],[data-topic],[data-redeem]");
+  const el = e.target.closest("[data-go],[data-lang],[data-cat],[data-item],[data-topic],[data-redeem],[data-seg]");
   if (!el) return;
   if (el.dataset.go) go(el.dataset.go);
+  else if (el.dataset.seg) seg(el.dataset.seg);
   else if (el.dataset.lang) { lang = el.dataset.lang; store.set("lang", lang); applyLang(); }
   else if (el.dataset.cat) { curCat = el.dataset.cat; go("list"); }
   else if (el.dataset.item) { curCat = el.dataset.icat || curCat; curItem = +el.dataset.item; go("detail"); }
@@ -771,11 +891,12 @@ $("#gateNo").addEventListener("click", () => {
 /* ---- start ---- */
 if (tg) {
   try { tg.ready(); tg.expand(); } catch (e) {}
-  try { tg.setHeaderColor("#070707"); tg.setBackgroundColor("#070707"); } catch (e) {}
+  try { tg.setHeaderColor("#0d0b07"); tg.setBackgroundColor("#070707"); } catch (e) {}
   if (tg.BackButton) tg.BackButton.onClick(() => go(PARENT[view] || "home"));
 }
 if (store.get("age20") === "1") $("#gate").style.display = "none";
 applyLang();
+go("home");
 
 // กติกาแต้มและของรางวัลจาก config.json (ไฟล์เดียวกับที่บอทใช้)
 fetch("config.json", { cache: "no-store" }).then((r) => r.ok ? r.json() : null).then((c) => {
@@ -783,7 +904,9 @@ fetch("config.json", { cache: "no-store" }).then((r) => r.ok ? r.json() : null).
   if (c.baht_per_point > 0) LOYALTY.bahtPerPoint = +c.baht_per_point;
   if (c.points_per_visit >= 0) LOYALTY.pointsPerVisit = +c.points_per_visit;
   if (Array.isArray(c.rewards)) LOYALTY.rewards = c.rewards.filter((r) => r && r.id && r.cost > 0 && r.label);
-  renderMember();
+  if (Array.isArray(c.promos)) HOME.promos = c.promos.filter((x) => x && x.title);
+  if (Array.isArray(c.events)) HOME.events = c.events.filter((x) => x && x.title);
+  renderMember(); renderHome();
 }).catch(() => {});
 </script>
 </body>
