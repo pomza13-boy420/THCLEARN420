@@ -1,0 +1,11 @@
+{
+  "shop_name": "THC Room Learn",
+  "baht_per_point": 100,
+  "points_per_visit": 1,
+  "expire_days": 0,
+  "rewards": [
+    { "id": "disc50",  "cost": 10, "label": { "th": "ส่วนลด ฿50",  "en": "฿50 off" } },
+    { "id": "disc120", "cost": 20, "label": { "th": "ส่วนลด ฿120", "en": "฿120 off" } },
+    { "id": "disc350", "cost": 50, "label": { "th": "ส่วนลด ฿350", "en": "฿350 off" } }
+  ]
+}

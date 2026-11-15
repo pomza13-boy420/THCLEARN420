@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>THC Room Learn</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root {
+    --bg: #070707;
+    --card: #121110;
+    --card2: #1a1815;
+    --text: #f3ecd9;
+    --hint: #9c927a;
+    --gold: #d4af37;
+    --line: rgba(212, 175, 55, .28);
+    --metal: linear-gradient(135deg, #8a6a1f 0%, #f6e08a 28%, #c9a23f 50%, #fff3b0 72%, #a47a1e 100%);
+    --ink: #1a1304;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, "Segoe UI", "Noto Sans Thai", "Leelawadee UI", Roboto, sans-serif;
+    font-size: 16px; line-height: 1.55; }
+  body { padding: 0 16px 40px; max-width: 640px; margin: 0 auto;
+    background: radial-gradient(120% 50% at 50% 0%, #1c1608 0%, var(--bg) 60%) no-repeat var(--bg); min-height: 100vh; }
+  .gold { background: var(--metal); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  header { display: flex; align-items: center; justify-content: space-between; padding: 14px 0 10px;
+    position: sticky; top: 0; background: rgba(7, 7, 7, .92); backdrop-filter: blur(8px); z-index: 5;
+    border-bottom: 1px solid var(--line); margin-bottom: 12px; }
+  .brand { font-weight: 800; font-size: 17px; letter-spacing: .08em; text-transform: uppercase; }
+  .lang { display: flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+  .lang button { background: none; border: 0; color: var(--hint); padding: 6px 12px; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .lang button.on { background: var(--metal); color: var(--ink); }
+  .back { background: none; border: 0; color: var(--gold); font-size: 15px; padding: 4px 0 10px; cursor: pointer; font-family: inherit; }
+  h1 { font-size: 24px; margin: 8px 0 4px; line-height: 1.25; text-align: center; letter-spacing: .02em; }
+  h2 { font-size: 16px; margin: 20px 0 8px; color: var(--gold); letter-spacing: .04em; }
+  p.sub { color: var(--hint); margin: 0 0 16px; font-size: 14px; text-align: center; }
+  .rule { height: 1px; background: var(--metal); opacity: .6; width: 72px; margin: 10px auto 16px; }
+  .view { display: none; } .view.on { display: block; }
+
+  /* ตารางเมนู / tile grids */
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
+  .tile { background: linear-gradient(160deg, var(--card2), var(--card)); color: var(--text); border: 1px solid var(--line);
+    border-radius: 16px; padding: 20px 10px; text-align: center; cursor: pointer; font: inherit;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 128px;
+    box-shadow: inset 0 1px 0 rgba(255, 243, 176, .08), 0 6px 18px rgba(0, 0, 0, .5); }
+  .tile:active { transform: scale(.98); border-color: var(--gold); }
+  .tile.wide { grid-column: 1 / -1; }
+  .tile .ico { font-size: 32px; width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center;
+    background: radial-gradient(circle at 30% 25%, #3a2f12, #0d0b06); border: 1px solid var(--line); }
+  .tile b { font-size: 16px; font-weight: 700; letter-spacing: .03em; }
+  .tile small { color: var(--hint); font-size: 12px; }
+
+  /* รายการสินค้า / item cards */
+  .item { background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; cursor: pointer;
+    color: var(--text); font: inherit; padding: 0; text-align: center; display: flex; flex-direction: column; }
+  .item:active { transform: scale(.98); border-color: var(--gold); }
+  .pic { aspect-ratio: 1 / 1; width: 100%; display: grid; place-items: center; font-size: 54px;
+    background: radial-gradient(circle at 50% 35%, #2e260f 0%, #0c0a05 75%); border-bottom: 1px solid var(--line); }
+  .pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .item .nm { font-weight: 700; font-size: 14px; padding: 10px 8px 2px; line-height: 1.3; }
+  .item .pr { font-weight: 800; font-size: 15px; padding: 0 8px 12px; }
+  .item .pr small, .price small { font-weight: 500; font-size: 12px; color: var(--hint); -webkit-text-fill-color: var(--hint); }
+
+  /* รายละเอียด / detail */
+  .hero { border: 1px solid var(--line); border-radius: 18px; overflow: hidden; max-width: 300px; margin: 0 auto 14px; }
+  .badge { display: inline-block; border: 1px solid var(--line); color: var(--gold); border-radius: 999px; padding: 3px 12px;
+    font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  .center { text-align: center; }
+  .price { font-size: 26px; font-weight: 800; margin: 6px 0 2px; }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0 4px; }
+  .stats div { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px; text-align: center; }
+  .stats small { display: block; color: var(--hint); font-size: 11px; letter-spacing: .1em; }
+  .stats b { font-size: 16px; }
+  .box { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 14px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tags span { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 5px 12px; font-size: 13px; }
+
+  /* บัตรสมาชิก / member card */
+  .mcard { background: var(--metal); color: var(--ink); border-radius: 18px; padding: 18px; margin-top: 6px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .5); }
+  .mtop { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; font-weight: 800; letter-spacing: .14em; }
+  .mtype { background: var(--ink); color: #f6e08a; border-radius: 999px; padding: 3px 10px; letter-spacing: .02em; }
+  .mname { font-size: 20px; font-weight: 800; margin: 16px 0 0; word-break: break-word; }
+  .mpts { font-size: 14px; font-weight: 600; }
+  .mpts b { font-size: 40px; font-weight: 800; margin-right: 6px; }
+  .mdates { display: flex; justify-content: space-between; gap: 12px; font-size: 11px; margin-top: 10px; }
+  .mdates b { display: block; font-size: 13px; }
+  .qrbox { display: flex; gap: 14px; align-items: center; }
+  #qr { background: #fff; padding: 6px; border-radius: 8px; flex: none; line-height: 0; }
+  #qr:empty { display: none; }
+  .mid { font-size: 20px; font-weight: 800; letter-spacing: .08em; }
+  .tile.info { cursor: default; min-height: 0; padding: 16px 8px; }
+  .tile.mine { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold), 0 6px 18px rgba(0, 0, 0, .5); }
+  .tile .tag { font-size: 11px; background: var(--metal); color: var(--ink); border-radius: 999px; padding: 1px 9px; font-weight: 800; }
+  .reward { display: flex; align-items: center; gap: 10px; background: var(--card); border: 1px solid var(--line);
+    border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; }
+  .reward div { flex: 1; font-size: 14px; }
+  .reward small { display: block; color: var(--hint); font-size: 12px; }
+  .reward button { background: var(--metal); color: var(--ink); border: 0; border-radius: 999px; padding: 8px 16px;
+    font: inherit; font-weight: 800; font-size: 13px; cursor: pointer; }
+  .reward button:disabled { background: none; border: 1px solid var(--line); color: var(--hint); cursor: default; }
+  .calc { display: flex; align-items: center; gap: 10px; }
+  .calc input { flex: 1; min-width: 0; }
+  .calc b { white-space: nowrap; font-size: 16px; }
+  .search { text-align: center; }
+  .empty { color: var(--hint); text-align: center; font-size: 14px; margin-top: 18px; }
+
+  .note { border: 1px solid var(--line); border-left: 3px solid var(--gold); background: var(--card);
+    border-radius: 10px; padding: 10px 12px; font-size: 13px; color: var(--hint); margin: 18px 0; }
+  .note.c { text-align: center; border-left-width: 1px; }
+  label { display: block; font-size: 13px; color: var(--hint); margin: 14px 0 5px; }
+  input[type=text], input[type=number], input[type=tel], textarea {
+    width: 100%; background: var(--card); color: var(--text); border: 1px solid var(--line);
+    border-radius: 10px; padding: 11px 12px; font: inherit; }
+  input:focus, textarea:focus { outline: none; border-color: var(--gold); }
+  textarea { min-height: 76px; resize: vertical; }
+  .checks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .checks label, .consent { display: flex; gap: 8px; align-items: flex-start; margin: 0; color: var(--text);
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 9px 10px; font-size: 14px; }
+  .consent { margin-top: 16px; font-size: 13px; }
+  input[type=checkbox] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--gold); flex: none; }
+  .btn { width: 100%; background: var(--metal); color: var(--ink); border: 0; border-radius: 12px;
+    padding: 14px; font: inherit; font-weight: 800; margin-top: 18px; cursor: pointer; letter-spacing: .03em; }
+  .btn.ghost { background: none; color: var(--gold); border: 1px solid var(--gold); }
+  .err { color: #e5604f; font-size: 13px; margin-top: 10px; min-height: 18px; }
+  .summary { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; font-size: 14px; white-space: pre-wrap; }
+  .topic { background: var(--card); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 10px; overflow: hidden; }
+  .topic-head { display: flex; align-items: center; gap: 10px; padding: 12px 14px; }
+  .topic-head b { flex: 1; font-size: 15px; }
+  .play { width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--metal); color: var(--ink);
+    font-size: 16px; cursor: pointer; flex: none; }
+  .play.playing { background: #e5604f; color: #fff; }
+  .topic-body { padding: 0 14px 14px; font-size: 14px; }
+  .topic-body ul { margin: 0; padding-left: 20px; }
+  .topic-body li { margin-bottom: 4px; }
+  #gate { position: fixed; inset: 0; background: var(--bg); z-index: 20; display: grid; place-items: center; padding: 24px; text-align: center; }
+  #gate .gbox { max-width: 360px; }
+  #gate .big { font-size: 56px; }
+  footer { color: var(--hint); font-size: 12px; text-align: center; margin-top: 28px; letter-spacing: .06em; }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="gbox">
+    <div class="big">🌿</div>
+    <h1 class="gold" data-i18n="gateTitle"></h1>
+    <p class="sub" data-i18n="gateText"></p>
+    <button class="btn" id="gateYes" data-i18n="gateYes"></button>
+    <button class="btn ghost" id="gateNo" data-i18n="gateNo"></button>
+    <div class="lang" style="margin:18px auto 0; width:max-content">
+      <button data-lang="th">ไทย</button><button data-lang="en">EN</button>
+    </div>
+  </div>
+</div>
+
+<header>
+  <div class="brand gold">THC Room Learn</div>
+  <div class="lang">
+    <button data-lang="th">ไทย</button><button data-lang="en">EN</button>
+  </div>
+</header>
+
+<!-- HOME -->
+<div class="view on" id="v-home">
+  <h1 class="gold" data-i18n="homeTitle"></h1>
+  <div class="rule"></div>
+  <p class="sub" data-i18n="homeSub"></p>
+  <div class="grid">
+    <button class="tile" data-go="cats"><div class="ico">🌸</div><b class="gold" data-i18n="mFlowers"></b></button>
+    <button class="tile" data-go="member"><div class="ico">⭐</div><b class="gold" data-i18n="mMember"></b><small id="homePts"></small></button>
+    <button class="tile" data-go="pt33"><div class="ico">📋</div><b class="gold" data-i18n="mPt33"></b></button>
+    <button class="tile" data-go="guide"><div class="ico">🎧</div><b class="gold" data-i18n="mGuide"></b></button>
+  </div>
+  <div class="note c" data-i18n="homeNote"></div>
+</div>
+
+<!-- CATEGORIES -->
+<div class="view" id="v-cats">
+  <button class="back" data-go="home" data-i18n="back"></button>
+  <h1 class="gold" data-i18n="mFlowers"></h1>
+  <div class="rule"></div>
+  <input type="text" class="search" id="search" data-i18n-ph="searchPh" autocomplete="off">
+  <div class="grid" id="catGrid"></div>
+  <div class="grid" id="searchGrid"></div>
+  <div class="empty" id="searchEmpty" style="display:none" data-i18n="searchNone"></div>
+</div>
+
+<!-- MEMBER -->
+<div class="view" id="v-member">
+  <button class="back" data-go="home" data-i18n="back"></button>
+  <h1 class="gold" data-i18n="mMember"></h1>
+  <div class="rule"></div>
+  <div id="member"></div>
+</div>
+
+<!-- ITEM LIST -->
+<div class="view" id="v-list">
+  <button class="back" data-go="cats" data-i18n="backCats"></button>
+  <h1 class="gold" id="listTitle"></h1>
+  <div class="rule"></div>
+  <p class="sub" id="listSub"></p>
+  <div class="grid" id="itemGrid"></div>
+</div>
+
+<!-- ITEM DETAIL -->
+<div class="view" id="v-detail">
+  <button class="back" data-go="list" data-i18n="backList"></button>
+  <div id="detail"></div>
+</div>
+
+<!-- PT33 -->
+<div class="view" id="v-pt33">
+  <button class="back" data-go="home" data-i18n="back"></button>
+  <h1 class="gold" data-i18n="ptTitle"></h1>
+  <div class="rule"></div>
+  <p class="sub" data-i18n="ptSub"></p>
+  <div class="note" data-i18n="ptNote"></div>
+  <form id="ptForm" novalidate>
+    <label data-i18n="fName"></label><input type="text" id="fName" autocomplete="name">
+    <label data-i18n="fAge"></label><input type="number" id="fAge" inputmode="numeric" min="1" max="120">
+    <label data-i18n="fPhone"></label><input type="tel" id="fPhone" autocomplete="tel">
+    <label data-i18n="fSymptoms"></label>
+    <div class="checks" id="symptoms"></div>
+    <label data-i18n="fDetail"></label><textarea id="fDetail"></textarea>
+    <label data-i18n="fMeds"></label><textarea id="fMeds"></textarea>
+    <div class="consent"><input type="checkbox" id="fConsent"><span data-i18n="fConsent"></span></div>
+    <div class="err" id="ptErr"></div>
+    <button class="btn" type="submit" data-i18n="fSubmit"></button>
+  </form>
+  <div id="ptDone" style="display:none">
+    <h2 data-i18n="ptDoneTitle"></h2>
+    <div class="summary" id="ptSummary"></div>
+    <p class="sub" style="margin-top:12px" data-i18n="ptDoneText"></p>
+    <button class="btn ghost" id="ptAgain" data-i18n="ptAgain"></button>
+  </div>
+</div>
+
+<!-- GUIDE -->
+<div class="view" id="v-guide">
+  <button class="back" data-go="home" data-i18n="back"></button>
+  <h1 class="gold" data-i18n="gTitle"></h1>
+  <div class="rule"></div>
+  <p class="sub" data-i18n="gSub"></p>
+  <div id="topics"></div>
+  <div class="note" data-i18n="gNote"></div>
+</div>
+
+<footer data-i18n="footer"></footer>
+
+<script>
+/* ============================================================
+   1) ข้อความ 2 ภาษา / Bilingual strings
+   ============================================================ */
+const I18N = {
+  th: {
+    gateTitle: "คุณอายุ 20 ปีขึ้นไปหรือไม่?",
+    gateText: "เนื้อหานี้สำหรับผู้ที่มีอายุ 20 ปีขึ้นไปเท่านั้น",
+    gateYes: "ใช่ ฉันอายุ 20 ปีขึ้นไป", gateNo: "ไม่ใช่",
+    gateBlocked: "ขออภัย เนื้อหานี้สำหรับผู้ที่มีอายุ 20 ปีขึ้นไปเท่านั้น",
+    homeTitle: "ห้องเรียนรู้กัญชา", homeSub: "เลือกเมนู",
+    mFlowers: "ดอกไม้ออแกนิค", mPt33: "ใบ ภ.ท.33", mGuide: "ฟังวิธีใช้",
+    homeNote: "เพื่อการศึกษา · ไม่มีการสั่งซื้อผ่านแอพ · 20+",
+    back: "‹ หน้าหลัก", backCats: "‹ หมวดหมู่", backList: "‹ รายการ",
+    items: "รายการ", searchPh: "🔍 ค้นหาสายพันธุ์ กลิ่น เอฟเฟค", searchNone: "ไม่พบรายการที่ค้นหา",
+    mMember: "สมาชิก", ptsWord: "แต้ม", memberWord: "MEMBER", noName: "สมาชิก THC Room",
+    since: "เริ่มเป็นสมาชิก", until: "แต้มหมดอายุ", noSince: "หลังได้แต้มครั้งแรก",
+    notLinked: "เปิดแอพจากปุ่มของบอทใน Telegram เพื่อดูแต้มของคุณ",
+    codeTitle: "รหัสสมาชิก", codeHint: "แสดงรหัสนี้ให้พนักงานทุกครั้งเพื่อรับแต้ม",
+    earnTitle: "สะสมแต้ม 2 แบบ", bothNote: "สมาชิกทุกคนได้แต้มทั้ง 2 แบบ",
+    calcTitle: "คำนวณแต้ม (มา 1 ครั้ง)", calcPh: "ยอดซื้อ (บาท)",
+    rewardsTitle: "แลกแต้ม", redeem: "แลก", need: (n) => `ขาดอีก ${n} แต้ม`, cost: (n) => `ใช้ ${n} แต้ม`,
+    confirmRedeem: (l, c) => `แลก “${l}” ด้วย ${c} แต้ม?`, redeemOnlyTg: "แลกแต้มได้เมื่อเปิดแอพจากปุ่มของบอทใน Telegram",
+    vouchersTitle: "คูปองของคุณ",
+    unitG: "/ กรัม", unitPc: "/ ชิ้น", unitRoll: "/ มวน",
+    dAbout: "รายละเอียด", dEffects: "เอฟเฟค", dFlavors: "รสชาติ", dParents: "พ่อแม่พันธุ์",
+    ptTitle: "ใบ ภ.ท.33",
+    ptSub: "กรอกข้อมูลเบื้องต้นเพื่อส่งให้ผู้ประกอบวิชาชีพประเมิน",
+    ptNote: "⚠️ ใบ ภ.ท.33 ต้องออกโดยผู้ประกอบวิชาชีพที่ได้รับอนุญาตเท่านั้น แบบฟอร์มนี้เป็นเพียงการส่งข้อมูลเบื้องต้น ไม่ใช่ใบสั่งจ่าย",
+    fName: "ชื่อ–นามสกุล", fAge: "อายุ (ปี)", fPhone: "เบอร์ติดต่อ",
+    fSymptoms: "อาการที่ต้องการปรึกษา", fDetail: "รายละเอียดอาการ (ถ้ามี)",
+    fMeds: "โรคประจำตัว / ยาที่ใช้อยู่ / ประวัติแพ้ยา",
+    fConsent: "ข้าพเจ้ายืนยันว่าข้อมูลเป็นความจริง และยินยอมให้ส่งข้อมูลนี้แก่ผู้ประกอบวิชาชีพเพื่อการประเมิน",
+    fSubmit: "ส่งข้อมูล",
+    symptoms: ["นอนไม่หลับ", "ปวดเรื้อรัง", "เบื่ออาหาร", "ปวดไมเกรน", "คลื่นไส้จากเคมีบำบัด", "กล้ามเนื้อเกร็ง", "ลมชัก", "อื่น ๆ"],
+    eName: "กรุณากรอกชื่อ–นามสกุล", eAge: "ต้องมีอายุ 20 ปีขึ้นไป", ePhone: "กรุณากรอกเบอร์ติดต่อ",
+    eSym: "กรุณาเลือกอาการอย่างน้อย 1 ข้อ", eConsent: "กรุณาติ๊กยินยอมก่อนส่งข้อมูล",
+    ptDoneTitle: "✅ บันทึกข้อมูลแล้ว",
+    ptDoneText: "ผู้ประกอบวิชาชีพจะตรวจสอบข้อมูลและติดต่อกลับ การออกใบ ภ.ท.33 ขึ้นอยู่กับดุลยพินิจของผู้ประกอบวิชาชีพ",
+    ptAgain: "กรอกใหม่",
+    sName: "ชื่อ", sAge: "อายุ", sPhone: "ติดต่อ", sSym: "อาการ", sDetail: "รายละเอียด", sMeds: "โรค/ยา/แพ้ยา",
+    gTitle: "ฟังวิธีใช้", gSub: "กด ▶ เพื่อฟัง หรืออ่านเนื้อหาด้านล่าง",
+    gNote: "ข้อมูลนี้ไม่ใช่คำแนะนำทางการแพทย์ หากมีโรคประจำตัวหรือใช้ยาอยู่ ควรปรึกษาแพทย์ก่อนใช้",
+    noVoice: "อุปกรณ์นี้ไม่รองรับการอ่านออกเสียง กรุณาอ่านเนื้อหาแทน",
+    footer: "THC ROOM LEARN · 20+"
+  },
+  en: {
+    gateTitle: "Are you 20 or older?",
+    gateText: "This content is intended only for people aged 20 and over.",
+    gateYes: "Yes, I am 20 or older", gateNo: "No",
+    gateBlocked: "Sorry, this content is only for people aged 20 and over.",
+    homeTitle: "Cannabis Learning Room", homeSub: "Choose a menu",
+    mFlowers: "Organic Flowers", mPt33: "PT.33 Form", mGuide: "Audio Guide",
+    homeNote: "Education only · No ordering in the app · 20+",
+    back: "‹ Home", backCats: "‹ Categories", backList: "‹ List",
+    items: "items", searchPh: "🔍 Search strain, flavor, effect", searchNone: "Nothing matches your search",
+    mMember: "Member", ptsWord: "points", memberWord: "MEMBER", noName: "THC Room member",
+    since: "Member since", until: "Points expire", noSince: "after your first point",
+    notLinked: "Open the app from the bot's button in Telegram to see your points.",
+    codeTitle: "Member code", codeHint: "Show this code to staff every time to collect points",
+    earnTitle: "Two ways to earn", bothNote: "Every member earns points both ways",
+    calcTitle: "Points calculator (1 visit)", calcPh: "Amount spent (baht)",
+    rewardsTitle: "Rewards", redeem: "Redeem", need: (n) => `${n} more points`, cost: (n) => `${n} points`,
+    confirmRedeem: (l, c) => `Redeem “${l}” for ${c} points?`, redeemOnlyTg: "Redeeming works when the app is opened from the bot's button in Telegram.",
+    vouchersTitle: "Your vouchers",
+    unitG: "/ gram", unitPc: "/ piece", unitRoll: "/ roll",
+    dAbout: "About", dEffects: "Effects", dFlavors: "Flavors", dParents: "Lineage",
+    ptTitle: "PT.33 Form",
+    ptSub: "Fill in basic details to send to a practitioner for assessment",
+    ptNote: "⚠️ A PT.33 can only be issued by a licensed practitioner. This form only sends preliminary information; it is not a prescription.",
+    fName: "Full name", fAge: "Age (years)", fPhone: "Contact number",
+    fSymptoms: "Symptoms to discuss", fDetail: "Symptom details (optional)",
+    fMeds: "Medical conditions / current medication / drug allergies",
+    fConsent: "I confirm this information is true and consent to sharing it with a practitioner for assessment.",
+    fSubmit: "Submit",
+    symptoms: ["Insomnia", "Chronic pain", "Loss of appetite", "Migraine", "Chemo-related nausea", "Muscle spasticity", "Epilepsy", "Other"],
+    eName: "Please enter your full name", eAge: "You must be 20 or older", ePhone: "Please enter a contact number",
+    eSym: "Please select at least one symptom", eConsent: "Please tick the consent box before submitting",
+    ptDoneTitle: "✅ Details saved",
+    ptDoneText: "A practitioner will review your details and contact you. Issuing a PT.33 is at the practitioner's discretion.",
+    ptAgain: "Fill in again",
+    sName: "Name", sAge: "Age", sPhone: "Contact", sSym: "Symptoms", sDetail: "Details", sMeds: "Conditions/meds/allergies",
+    gTitle: "Audio Guide", gSub: "Tap ▶ to listen, or read the text below",
+    gNote: "This is not medical advice. If you have a medical condition or take medication, talk to a doctor first.",
+    noVoice: "This device does not support read-aloud. Please read the text instead.",
+    footer: "THC ROOM LEARN · 20+"
+  }
+};
+
+/* ============================================================
+   2) หมวดและสินค้า (ตัวอย่าง — แก้ไขได้ที่นี่)
+      Categories and products (samples — edit here)
+      img:   ใส่ path รูป เช่น "img/sour-diesel.jpg" (ถ้าเว้น null จะแสดงไอคอนแทน)
+      price: ราคา (บาท)   unit: "unitG" ต่อกรัม | "unitPc" ต่อชิ้น | "unitRoll" ต่อมวน
+   ============================================================ */
+const CATS = [
+  { id: "sativa",  label: "Sativa",   ico: "☀️" },
+  { id: "indica",  label: "Indica",   ico: "🌙" },
+  { id: "hybrid",  label: "Hybrid",   ico: "⚖️" },
+  { id: "edible",  label: "Edible",   ico: "🍪" },
+  { id: "preroll", label: "Pre-roll", ico: "🚬" }
+];
+const PRODUCTS = {
+  sativa: [
+    { name: "Sour Diesel", img: null, price: 450, unit: "unitG", thc: "20–25%", cbd: "<1%",
+      desc: { th: "ดอกสีเขียวอ่อน ขนส้ม ไตรโคมแน่น", en: "Light green buds, orange hairs, dense trichomes" },
+      effects: { th: ["ตื่นตัว", "สดชื่น", "สร้างสรรค์"], en: ["Energetic", "Uplifting", "Creative"] },
+      flavors: { th: ["ดีเซล", "ส้ม", "ดิน"], en: ["Diesel", "Citrus", "Earthy"] },
+      parents: "Chemdawg × Super Skunk" },
+    { name: "Jack Herer", img: null, price: 480, unit: "unitG", thc: "18–23%", cbd: "<1%",
+      desc: { th: "ดอกเรียวยาว เรซินเหนียว กลิ่นสนชัด", en: "Elongated buds, sticky resin, strong pine nose" },
+      effects: { th: ["สมาธิ", "อารมณ์ดี", "ปลอดโปร่ง"], en: ["Focused", "Happy", "Clear-headed"] },
+      flavors: { th: ["สน", "เครื่องเทศ", "ไม้"], en: ["Pine", "Spice", "Wood"] },
+      parents: "Haze × Northern Lights #5 × Shiva Skunk" },
+    { name: "Durban Poison", img: null, price: 420, unit: "unitG", thc: "17–24%", cbd: "<1%",
+      desc: { th: "ดอกกลมใหญ่ ไตรโคมหนา สายพันธุ์แท้", en: "Chunky round buds, heavy trichomes, pure landrace" },
+      effects: { th: ["กระปรี้กระเปร่า", "ตื่นตัว", "สดใส"], en: ["Lively", "Alert", "Bright"] },
+      flavors: { th: ["หวาน", "โป๊ยกั๊ก", "สน"], en: ["Sweet", "Anise", "Pine"] },
+      parents: "South African Landrace" }
+  ],
+  indica: [
+    { name: "Northern Lights", img: null, price: 430, unit: "unitG", thc: "16–21%", cbd: "<1%",
+      desc: { th: "ดอกแน่น เรซินเยอะ แซมสีม่วง", en: "Dense resinous buds with purple hues" },
+      effects: { th: ["ผ่อนคลาย", "สงบ", "ง่วง"], en: ["Relaxed", "Calm", "Sleepy"] },
+      flavors: { th: ["ดิน", "สน", "หวาน"], en: ["Earthy", "Pine", "Sweet"] },
+      parents: "Afghani × Thai" },
+    { name: "Granddaddy Purple", img: null, price: 500, unit: "unitG", thc: "17–23%", cbd: "<1%",
+      desc: { th: "ดอกใหญ่สีม่วงเข้ม ไตรโคมขาวฟู", en: "Large deep-purple buds with frosty trichomes" },
+      effects: { th: ["ผ่อนคลาย", "ง่วง", "เคลิ้ม"], en: ["Relaxed", "Sleepy", "Euphoric"] },
+      flavors: { th: ["องุ่น", "เบอร์รี", "หวาน"], en: ["Grape", "Berry", "Sweet"] },
+      parents: "Purple Urkle × Big Bud" },
+    { name: "Bubba Kush", img: null, price: 460, unit: "unitG", thc: "15–22%", cbd: "<1%",
+      desc: { th: "ดอกเล็กแน่น สีเขียวเข้มอมม่วง", en: "Small tight buds, dark green to purple" },
+      effects: { th: ["สงบ", "หนักตัว", "ผ่อนคลาย"], en: ["Calm", "Heavy-bodied", "Relaxed"] },
+      flavors: { th: ["กาแฟ", "ช็อกโกแลต", "ดิน"], en: ["Coffee", "Chocolate", "Earthy"] },
+      parents: "OG Kush × Unknown Indica" }
+  ],
+  hybrid: [
+    { name: "Blue Dream", img: null, price: 450, unit: "unitG", thc: "17–24%", cbd: "<1%",
+      desc: { th: "ดอกฟู ขนส้ม กลิ่นเบอร์รีหวาน", en: "Fluffy buds, orange hairs, sweet berry nose" },
+      effects: { th: ["สมดุล", "อารมณ์ดี", "ผ่อนคลายเบา ๆ"], en: ["Balanced", "Happy", "Gently relaxed"] },
+      flavors: { th: ["บลูเบอร์รี", "หวาน", "สมุนไพร"], en: ["Blueberry", "Sweet", "Herbal"] },
+      parents: "Blueberry × Haze" },
+    { name: "Gelato", img: null, price: 550, unit: "unitG", thc: "20–25%", cbd: "<1%",
+      desc: { th: "ดอกแน่น สีม่วงแซมส้ม ไตรโคมขาว", en: "Dense purple buds, orange hairs, white trichomes" },
+      effects: { th: ["อารมณ์ดี", "ผ่อนคลาย", "เคลิ้ม"], en: ["Happy", "Relaxed", "Euphoric"] },
+      flavors: { th: ["ครีม", "ผลไม้", "หวาน"], en: ["Creamy", "Fruity", "Sweet"] },
+      parents: "Sunset Sherbet × Thin Mint GSC" },
+    { name: "Wedding Cake", img: null, price: 600, unit: "unitG", thc: "22–27%", cbd: "<1%",
+      desc: { th: "ดอกหนาแน่น ไตรโคมขาวโพลน ฤทธิ์แรง", en: "Thick buds caked in trichomes, potent" },
+      effects: { th: ["ผ่อนคลาย", "เคลิ้ม", "หิว"], en: ["Relaxed", "Euphoric", "Hungry"] },
+      flavors: { th: ["วานิลลา", "พริกไทย", "หวาน"], en: ["Vanilla", "Pepper", "Sweet"] },
+      parents: "Triangle Kush × Animal Mints" }
+  ],
+  edible: [
+    { name: { th: "กัมมี่ผลไม้", en: "Fruit Gummies" }, img: null, price: 150, unit: "unitPc", thc: "5 mg", cbd: "–",
+      desc: { th: "กัมมี่ชิ้นเล็ก ออกฤทธิ์ใน 30–120 นาที", en: "Small gummy, onset in 30–120 minutes" },
+      effects: { th: ["ผ่อนคลาย", "ฤทธิ์นาน"], en: ["Relaxed", "Long lasting"] },
+      flavors: { th: ["ผลไม้รวม"], en: ["Mixed fruit"] }, parents: null },
+    { name: { th: "บราวนี่", en: "Brownie" }, img: null, price: 250, unit: "unitPc", thc: "10 mg", cbd: "–",
+      desc: { th: "บราวนี่ช็อกโกแลต ฤทธิ์นาน 4–8 ชั่วโมง", en: "Chocolate brownie, lasts 4–8 hours" },
+      effects: { th: ["ผ่อนคลายลึก", "ง่วง"], en: ["Deeply relaxed", "Sleepy"] },
+      flavors: { th: ["ช็อกโกแลต"], en: ["Chocolate"] }, parents: null },
+    { name: { th: "คุกกี้ CBD", en: "CBD Cookie" }, img: null, price: 180, unit: "unitPc", thc: "2 mg", cbd: "20 mg",
+      desc: { th: "คุกกี้เนย THC ต่ำ เหมาะกับผู้เริ่มต้น", en: "Butter cookie, low THC, beginner friendly" },
+      effects: { th: ["สงบ", "อ่อน"], en: ["Calm", "Mild"] },
+      flavors: { th: ["เนย", "วานิลลา"], en: ["Butter", "Vanilla"] }, parents: null }
+  ],
+  preroll: [
+    { name: "Sativa Pre-roll 1g", img: null, price: 300, unit: "unitRoll", thc: "18–22%", cbd: "<1%",
+      desc: { th: "มวนสำเร็จ 1 กรัม ดอกล้วน", en: "1 g ready-rolled, flower only" },
+      effects: { th: ["ตื่นตัว", "สดชื่น"], en: ["Energetic", "Uplifting"] },
+      flavors: { th: ["ส้ม", "สน"], en: ["Citrus", "Pine"] }, parents: null },
+    { name: "Indica Pre-roll 1g", img: null, price: 300, unit: "unitRoll", thc: "18–22%", cbd: "<1%",
+      desc: { th: "มวนสำเร็จ 1 กรัม ดอกล้วน", en: "1 g ready-rolled, flower only" },
+      effects: { th: ["ผ่อนคลาย", "ง่วง"], en: ["Relaxed", "Sleepy"] },
+      flavors: { th: ["ดิน", "เบอร์รี"], en: ["Earthy", "Berry"] }, parents: null },
+    { name: "Hybrid Pre-roll 0.5g", img: null, price: 180, unit: "unitRoll", thc: "20–24%", cbd: "<1%",
+      desc: { th: "มวนเล็ก 0.5 กรัม ใช้ครั้งเดียว", en: "Small 0.5 g roll, single session" },
+      effects: { th: ["สมดุล", "อารมณ์ดี"], en: ["Balanced", "Happy"] },
+      flavors: { th: ["หวาน", "ครีม"], en: ["Sweet", "Creamy"] }, parents: null }
+  ]
+};
+
+/* ============================================================
+   2.5) สมาชิกและสะสมแต้ม / Membership and points
+   สมาชิกทุกคนได้แต้ม 2 แบบ: ทุก 100 บาท = 1 แต้ม และ มา 1 ครั้ง = 1 แต้ม
+   แต้มจริงเก็บที่บอท (bot.py) แอพแค่แสดงผล บอทส่งข้อมูลมากับลิงก์:
+     ?pts=<แต้ม>&lang=<th|en>&bot=<username บอท>&m=<base64url ของ JSON>
+     JSON: { n: ชื่อ, s: วันเริ่มสมาชิก (epoch วินาที), p: แต้ม, x: "วันหมดอายุ dd/mm/yyyy", v: ["คูปอง..."] }
+   กดแลกแต้ม แอพส่ง {"redeem": "<id>", "lang": "th"} กลับไปที่บอท
+   กติกาและของรางวัลจริงอยู่ในไฟล์ config.json (บอทกับแอพอ่านไฟล์เดียวกัน)
+   ค่าด้านล่างใช้เฉพาะเมื่อโหลด config.json ไม่ได้
+   ============================================================ */
+const LOYALTY = {
+  bahtPerPoint: 100,
+  pointsPerVisit: 1,
+  types: {
+    spend: { ico: "💰", label: { th: "สะสมยอดซื้อ", en: "Spend" } },
+    visit: { ico: "🚪", label: { th: "สะสมครั้ง", en: "Visit" } }
+  },
+  rewards: [
+    { id: "disc50",  cost: 10, label: { th: "ส่วนลด ฿50",  en: "฿50 off" } },
+    { id: "disc120", cost: 20, label: { th: "ส่วนลด ฿120", en: "฿120 off" } },
+    { id: "disc350", cost: 50, label: { th: "ส่วนลด ฿350", en: "฿350 off" } }
+  ]
+};
+
+/* ============================================================
+   3) คู่มือเสียง / Audio guide
+   ใส่ไฟล์เสียงจริงได้ที่ audio: { th: "audio/xxx-th.mp3", en: "audio/xxx-en.mp3" }
+   ถ้าไม่มีไฟล์ จะใช้เสียงอ่านของเครื่อง (Text-to-Speech)
+   ============================================================ */
+const TOPICS = [
+  { ico: "🌬️", audio: null,
+    title: { th: "รูปแบบการใช้", en: "Ways to use" },
+    points: {
+      th: ["การสูบ ออกฤทธิ์ภายในไม่กี่นาที และอยู่ราว 1 ถึง 3 ชั่วโมง", "เครื่องระเหย หรือ vaporizer ให้ความร้อนโดยไม่เผาไหม้ ระคายเคืองน้อยกว่าการสูบ", "แบบรับประทาน ออกฤทธิ์ช้า 30 นาทีถึง 2 ชั่วโมง แต่อยู่นาน 4 ถึง 8 ชั่วโมง", "น้ำมันหยดใต้ลิ้น ออกฤทธิ์ภายใน 15 ถึง 45 นาที"],
+      en: ["Smoking takes effect within minutes and lasts about 1 to 3 hours.", "A vaporizer heats without burning and is less irritating than smoking.", "Edibles act slowly, 30 minutes to 2 hours, but last 4 to 8 hours.", "Oil drops under the tongue take effect in 15 to 45 minutes."]
+    } },
+  { ico: "⚖️", audio: null,
+    title: { th: "ปริมาณ: เริ่มน้อย ไปช้า", en: "Dosing: start low, go slow" },
+    points: {
+      th: ["ผู้เริ่มต้นควรเริ่มจากปริมาณน้อยที่สุด", "แบบรับประทาน เริ่มที่ THC 2.5 ถึง 5 มิลลิกรัม", "รออย่างน้อย 2 ชั่วโมงก่อนรับประทานเพิ่ม", "ไม่ควรใช้ร่วมกับแอลกอฮอล์"],
+      en: ["Beginners should start with the smallest amount.", "For edibles, start with 2.5 to 5 milligrams of THC.", "Wait at least 2 hours before taking more.", "Do not combine with alcohol."]
+    } },
+  { ico: "⚠️", audio: null,
+    title: { th: "ผลข้างเคียงและผู้ที่ไม่ควรใช้", en: "Side effects and who should avoid it" },
+    points: {
+      th: ["ผลข้างเคียงที่พบบ่อย: ปากแห้ง ตาแดง ใจสั่น เวียนศีรษะ วิตกกังวล", "ไม่ควรใช้ในผู้ที่อายุต่ำกว่า 20 ปี หญิงตั้งครรภ์หรือให้นมบุตร", "ผู้ที่มีโรคหัวใจ หรือมีประวัติโรคจิตเวช ควรหลีกเลี่ยง", "ผู้ที่ใช้ยาประจำ ควรปรึกษาแพทย์ก่อน"],
+      en: ["Common side effects: dry mouth, red eyes, fast heartbeat, dizziness, anxiety.", "Not for people under 20, or anyone pregnant or breastfeeding.", "People with heart disease or a history of psychiatric illness should avoid it.", "If you take regular medication, ask a doctor first."]
+    } },
+  { ico: "🆘", audio: null,
+    title: { th: "ถ้าใช้มากเกินไป", en: "If you take too much" },
+    points: {
+      th: ["ตั้งสติ อาการจะค่อย ๆ หายไปเอง", "นั่งหรือนอนพักในที่เงียบและปลอดภัย", "ดื่มน้ำ และรับประทานของว่างเบา ๆ", "หากเจ็บหน้าอก หายใจลำบาก หรืออาการรุนแรง โทร 1669"],
+      en: ["Stay calm. The effects will pass on their own.", "Sit or lie down somewhere quiet and safe.", "Drink water and have a light snack.", "For chest pain, trouble breathing, or severe symptoms, call 1669."]
+    } },
+  { ico: "📜", audio: null,
+    title: { th: "ข้อควรรู้ทางกฎหมายในไทย", en: "Legal basics in Thailand" },
+    points: {
+      th: ["ต้องมีอายุ 20 ปีขึ้นไป", "ห้ามสูบในที่สาธารณะ", "ห้ามขับขี่ยานพาหนะหลังใช้", "ห้ามนำเข้าหรือนำออกนอกประเทศ", "กฎหมายมีการเปลี่ยนแปลง ควรตรวจสอบประกาศล่าสุดของกระทรวงสาธารณสุข"],
+      en: ["You must be 20 or older.", "No smoking in public places.", "Do not drive after use.", "Do not carry it into or out of the country.", "Rules change; check the latest Ministry of Public Health announcements."]
+    } }
+];
+
+/* ============================================================
+   4) ตัวแอพ / App logic
+   ============================================================ */
+const tg = window.Telegram && window.Telegram.WebApp;
+const inTelegram = !!(tg && tg.initData);
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => Array.from(document.querySelectorAll(s));
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+};
+
+// ข้อมูลสมาชิกที่บอทใส่มากับลิงก์ / member data the bot puts in the link
+const params = new URLSearchParams(location.search);
+const linked = params.has("m") || params.has("pts");
+const tgUser = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) || null;
+const member = { n: "", s: 0, p: Math.max(0, parseInt(params.get("pts") || "0", 10) || 0), x: "", t: "", v: [] };
+try {
+  const raw = params.get("m");
+  if (raw) {
+    const bin = atob(raw.replace(/-/g, "+").replace(/_/g, "/"));
+    Object.assign(member, JSON.parse(new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0)))));
+  }
+} catch (e) {}
+const myPoints = Math.max(0, parseInt(member.p, 10) || 0);
+
+let lang = store.get("lang")
+  || (I18N[params.get("lang")] ? params.get("lang") : null)
+  || ((tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.language_code) === "th" ? "th" : null)
+  || ((navigator.language || "").toLowerCase().startsWith("th") ? "th" : null)
+  || (inTelegram ? "en" : "th");
+let view = "home", curCat = "sativa", curItem = 0;
+const PARENT = { cats: "home", list: "cats", detail: "list", pt33: "home", guide: "home", member: "home" };
+const pick = (v) => (v && typeof v === "object" && !Array.isArray(v)) ? v[lang] : v;
+const t = (k) => I18N[lang][k];
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const cat = () => CATS.find((c) => c.id === curCat);
+const picHtml = (p, ico) => `<div class="pic">${p.img ? `<img src="${esc(p.img)}" alt="${esc(pick(p.name))}" loading="lazy">` : ico}</div>`;
+const priceHtml = (p) => `฿${Number(p.price).toLocaleString("en-US")} <small>${t(p.unit)}</small>`;
+
+function renderCats() {
+  $("#catGrid").innerHTML = CATS.map((c, i) => `
+    <button class="tile${i === CATS.length - 1 && CATS.length % 2 ? " wide" : ""}" data-cat="${c.id}">
+      <div class="ico">${c.ico}</div><b class="gold">${c.label}</b>
+      <small>${PRODUCTS[c.id].length} ${t("items")}</small>
+    </button>`).join("");
+}
+function renderList() {
+  const c = cat();
+  $("#listTitle").textContent = c.label;
+  $("#listSub").textContent = `${PRODUCTS[c.id].length} ${t("items")}`;
+  $("#itemGrid").innerHTML = PRODUCTS[c.id].map((p, i) => itemCard(p, c, i)).join("");
+}
+function itemCard(p, c, i) {
+  return `<button class="item" data-item="${i}" data-icat="${c.id}">
+      ${picHtml(p, c.ico)}
+      <div class="nm">${esc(pick(p.name))}</div>
+      <div class="pr gold">${priceHtml(p)}</div>
+    </button>`;
+}
+function renderSearch() {
+  const q = $("#search").value.trim().toLowerCase();
+  const hits = [];
+  if (q) CATS.forEach((c) => PRODUCTS[c.id].forEach((p, i) => {
+    const name = typeof p.name === "object" ? p.name.th + " " + p.name.en : p.name;
+    const hay = [name, c.label, p.parents || "", ...p.effects.th, ...p.effects.en, ...p.flavors.th, ...p.flavors.en].join(" ").toLowerCase();
+    if (hay.includes(q)) hits.push(itemCard(p, c, i));
+  }));
+  $("#catGrid").style.display = q ? "none" : "";
+  $("#searchGrid").innerHTML = hits.join("");
+  $("#searchEmpty").style.display = q && !hits.length ? "" : "none";
+}
+
+function ruleText(k) {
+  const b = LOYALTY.bahtPerPoint, v = LOYALTY.pointsPerVisit;
+  if (k === "spend") return lang === "th" ? `ทุก ฿${b} = 1 แต้ม` : `Every ฿${b} = 1 point`;
+  return lang === "th" ? `มา 1 ครั้ง = ${v} แต้ม` : `1 visit = ${v} point${v === 1 ? "" : "s"}`;
+}
+function bkkDate(sec) {
+  const d = new Date((sec + 7 * 3600) * 1000), two = (n) => String(n).padStart(2, "0");
+  return `${two(d.getUTCDate())}/${two(d.getUTCMonth() + 1)}/${d.getUTCFullYear()}`;
+}
+function renderMember() {
+  const name = member.n || (tgUser ? [tgUser.first_name, tgUser.last_name].filter(Boolean).join(" ") : "") || t("noName");
+  const uid = tgUser ? String(tgUser.id) : "";
+  $("#homePts").textContent = linked ? `${myPoints.toLocaleString("en-US")} ${t("ptsWord")}` : "";
+  $("#member").innerHTML = `
+    <div class="mcard">
+      <div class="mtop"><span>THC ROOM</span><span class="mtype">${t("memberWord")}</span></div>
+      <div class="mname">${esc(name)}</div>
+      <div class="mpts"><b>${myPoints.toLocaleString("en-US")}</b>${t("ptsWord")}</div>
+      <div class="mdates">
+        <span>${t("since")}<b>${member.s ? bkkDate(+member.s) : t("noSince")}</b></span>
+        <span style="text-align:right">${t("until")}<b>${esc(member.x || "—")}</b></span>
+      </div>
+    </div>
+    ${linked ? "" : `<div class="note c">${t("notLinked")}</div>`}
+    ${uid ? `<h2>${t("codeTitle")}</h2>
+      <div class="box qrbox"><div id="qr"></div><div><div class="mid gold">${esc(uid)}</div><small style="color:var(--hint)">${t("codeHint")}</small></div></div>` : ""}
+    <h2>${t("earnTitle")}</h2>
+    <div class="grid" style="margin-top:0">${Object.keys(LOYALTY.types).map((k) => { const ty = LOYALTY.types[k]; return `
+      <div class="tile info">
+        <div class="ico">${ty.ico}</div><b class="gold">${esc(pick(ty.label))}</b><small>${esc(ruleText(k))}</small>
+      </div>`; }).join("")}</div>
+    <p class="sub" style="margin-top:10px">${t("bothNote")}</p>
+    <h2>${t("calcTitle")}</h2>
+    <div class="box calc"><input type="number" id="calcIn" inputmode="numeric" min="0" placeholder="${t("calcPh")}"><b class="gold" id="calcOut">= ${LOYALTY.pointsPerVisit} ${t("ptsWord")}</b></div>
+    <h2>${t("rewardsTitle")}</h2>
+    ${LOYALTY.rewards.map((r) => { const ok = myPoints >= r.cost; return `
+      <div class="reward"><div>${esc(pick(r.label))}<small>${ok ? t("cost")(r.cost) : t("cost")(r.cost) + " · " + t("need")(r.cost - myPoints)}</small></div>
+        <button data-redeem="${r.id}" ${ok ? "" : "disabled"}>${t("redeem")}</button></div>`; }).join("")}
+    ${(member.v || []).length ? `<h2>${t("vouchersTitle")}</h2><div class="tags">${member.v.map((v) => `<span>🎟 ${esc(v)}</span>`).join("")}</div>` : ""}`;
+  if (uid && window.QRCode) {
+    // พนักงานสแกน QR นี้ด้วยกล้องมือถือ → เปิดบอทที่หน้าให้แต้มของลูกค้าคนนี้
+    const botName = (params.get("bot") || "").replace(/[^A-Za-z0-9_]/g, "");
+    const text = botName ? `https://t.me/${botName}?start=m${uid}` : uid;
+    try { new QRCode($("#qr"), { text, width: 96, height: 96, correctLevel: QRCode.CorrectLevel.M }); } catch (e) {}
+  }
+}
+function redeem(id) {
+  const r = LOYALTY.rewards.find((x) => x.id === id);
+  if (!r || myPoints < r.cost) return;
+  if (!(inTelegram && tg.sendData)) { alertMsg(t("redeemOnlyTg")); return; }
+  const send = () => { try { tg.sendData(JSON.stringify({ redeem: r.id, lang })); } catch (e) {} };
+  const q = t("confirmRedeem")(pick(r.label), r.cost);
+  if (tg.showConfirm) tg.showConfirm(q, (yes) => { if (yes) send(); }); else if (confirm(q)) send();
+}
+function renderDetail() {
+  const c = cat(), p = PRODUCTS[c.id][curItem];
+  if (!p) return;
+  const tags = (a) => `<div class="tags">${a.map((x) => `<span>${esc(x)}</span>`).join("")}</div>`;
+  $("#detail").innerHTML = `
+    <div class="hero">${picHtml(p, c.ico)}</div>
+    <div class="center">
+      <span class="badge">${c.label}</span>
+      <h1 class="gold">${esc(pick(p.name))}</h1>
+      <div class="price gold">${priceHtml(p)}</div>
+    </div>
+    <div class="stats"><div><small>THC</small><b>${esc(p.thc)}</b></div><div><small>CBD</small><b>${esc(p.cbd)}</b></div></div>
+    <h2>${t("dAbout")}</h2><div class="box">${esc(pick(p.desc))}</div>
+    <h2>${t("dEffects")}</h2>${tags(p.effects[lang])}
+    <h2>${t("dFlavors")}</h2>${tags(p.flavors[lang])}
+    ${p.parents ? `<h2>${t("dParents")}</h2><div class="box">${esc(p.parents)}</div>` : ""}`;
+}
+
+function renderSymptoms() {
+  const checked = $$("#symptoms input").map((i) => i.checked);
+  $("#symptoms").innerHTML = t("symptoms").map((s, i) =>
+    `<label><input type="checkbox" value="${i}" ${checked[i] ? "checked" : ""}><span>${esc(s)}</span></label>`).join("");
+}
+function renderTopics() {
+  $("#topics").innerHTML = TOPICS.map((tp, i) => `
+    <div class="topic">
+      <div class="topic-head"><span style="font-size:22px">${tp.ico}</span><b>${esc(pick(tp.title))}</b>
+        <button class="play" data-topic="${i}" aria-label="play">▶</button></div>
+      <div class="topic-body"><ul>${tp.points[lang].map((p) => `<li>${esc(p)}</li>`).join("")}</ul></div>
+    </div>`).join("");
+}
+
+function applyLang() {
+  stopAudio();
+  document.documentElement.lang = lang;
+  $$("[data-i18n]").forEach((el) => { el.textContent = t(el.dataset.i18n); });
+  $$("[data-i18n-ph]").forEach((el) => { el.placeholder = t(el.dataset.i18nPh); });
+  $$(".lang button").forEach((b) => b.classList.toggle("on", b.dataset.lang === lang));
+  renderCats(); renderList(); renderDetail(); renderSearch(); renderMember(); renderSymptoms(); renderTopics();
+}
+
+function go(v) {
+  stopAudio();
+  view = v;
+  if (v === "list") renderList();
+  if (v === "detail") renderDetail();
+  $$(".view").forEach((el) => el.classList.toggle("on", el.id === "v-" + v));
+  window.scrollTo(0, 0);
+  if (tg && tg.BackButton) { v === "home" ? tg.BackButton.hide() : tg.BackButton.show(); }
+  if (tg && tg.HapticFeedback) { try { tg.HapticFeedback.selectionChanged(); } catch (e) {} }
+}
+
+/* ---- เสียง / audio ---- */
+let player = null, playingBtn = null;
+function stopAudio() {
+  if (player) { player.pause(); player = null; }
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  if (playingBtn) { playingBtn.classList.remove("playing"); playingBtn.textContent = "▶"; playingBtn = null; }
+}
+function playTopic(i, btn) {
+  const same = playingBtn === btn;
+  stopAudio();
+  if (same) return;
+  const tp = TOPICS[i];
+  const done = () => { if (playingBtn === btn) stopAudio(); };
+  const src = tp.audio && tp.audio[lang];
+  if (src) {
+    player = new Audio(src);
+    player.onended = done; player.onerror = done;
+    player.play().catch(done);
+  } else if (window.speechSynthesis && window.SpeechSynthesisUtterance) {
+    const u = new SpeechSynthesisUtterance(pick(tp.title) + ". " + tp.points[lang].join(" "));
+    u.lang = lang === "th" ? "th-TH" : "en-US";
+    u.rate = 0.95;
+    u.onend = done; u.onerror = done;
+    speechSynthesis.speak(u);
+  } else {
+    alertMsg(t("noVoice"));
+    return;
+  }
+  playingBtn = btn; btn.classList.add("playing"); btn.textContent = "■";
+}
+function alertMsg(m) { (inTelegram && tg.showAlert) ? tg.showAlert(m) : alert(m); }
+
+/* ---- ฟอร์ม ภ.ท.33 / PT.33 form ---- */
+$("#ptForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const name = $("#fName").value.trim();
+  const age = parseInt($("#fAge").value, 10);
+  const phone = $("#fPhone").value.trim();
+  const sym = $$("#symptoms input:checked").map((i) => +i.value);
+  const err = !name ? "eName" : !(age >= 20) ? "eAge" : !phone ? "ePhone"
+    : !sym.length ? "eSym" : !$("#fConsent").checked ? "eConsent" : null;
+  $("#ptErr").textContent = err ? t(err) : "";
+  if (err) return;
+
+  const data = {
+    type: "pt33_request", lang, name, age, phone,
+    symptoms: sym.map((i) => I18N.en.symptoms[i]),
+    detail: $("#fDetail").value.trim().slice(0, 800),
+    meds: $("#fMeds").value.trim().slice(0, 800)
+  };
+  $("#ptSummary").textContent = [
+    `${t("sName")}: ${name}`, `${t("sAge")}: ${age}`, `${t("sPhone")}: ${phone}`,
+    `${t("sSym")}: ${sym.map((i) => t("symptoms")[i]).join(", ")}`,
+    data.detail ? `${t("sDetail")}: ${data.detail}` : null,
+    data.meds ? `${t("sMeds")}: ${data.meds}` : null
+  ].filter(Boolean).join("\n");
+  $("#ptForm").style.display = "none";
+  $("#ptDone").style.display = "block";
+  window.scrollTo(0, 0);
+
+  // ส่งข้อมูลกลับไปที่บอท (ทำงานเมื่อเปิดมินิแอพจากปุ่มคีย์บอร์ดของบอท)
+  // Sends data to the bot (works when the Mini App is opened from a bot keyboard button)
+  if (inTelegram && tg.sendData) { try { tg.sendData(JSON.stringify(data)); } catch (e2) {} }
+});
+$("#ptAgain").addEventListener("click", () => {
+  $("#ptForm").reset(); $("#ptErr").textContent = "";
+  $("#ptForm").style.display = "block"; $("#ptDone").style.display = "none";
+});
+
+/* ---- events ---- */
+document.addEventListener("click", (e) => {
+  const el = e.target.closest("[data-go],[data-lang],[data-cat],[data-item],[data-topic],[data-redeem]");
+  if (!el) return;
+  if (el.dataset.go) go(el.dataset.go);
+  else if (el.dataset.lang) { lang = el.dataset.lang; store.set("lang", lang); applyLang(); }
+  else if (el.dataset.cat) { curCat = el.dataset.cat; go("list"); }
+  else if (el.dataset.item) { curCat = el.dataset.icat || curCat; curItem = +el.dataset.item; go("detail"); }
+  else if (el.dataset.topic) playTopic(+el.dataset.topic, el);
+  else if (el.dataset.redeem) redeem(el.dataset.redeem);
+});
+document.addEventListener("input", (e) => {
+  if (e.target.id === "search") renderSearch();
+  else if (e.target.id === "calcIn") {
+    const pts = Math.floor(Math.max(0, +e.target.value || 0) / LOYALTY.bahtPerPoint), v = LOYALTY.pointsPerVisit;
+    $("#calcOut").textContent = pts ? `${pts.toLocaleString("en-US")} + ${v} = ${(pts + v).toLocaleString("en-US")} ${t("ptsWord")}`
+                                    : `= ${v} ${t("ptsWord")}`;
+  }
+});
+$("#gateYes").addEventListener("click", () => { store.set("age20", "1"); $("#gate").style.display = "none"; });
+$("#gateNo").addEventListener("click", () => {
+  $("#gate .gbox").innerHTML = `<div class="big">🚫</div><p>${esc(t("gateBlocked"))}</p>`;
+});
+
+/* ---- start ---- */
+if (tg) {
+  try { tg.ready(); tg.expand(); } catch (e) {}
+  try { tg.setHeaderColor("#070707"); tg.setBackgroundColor("#070707"); } catch (e) {}
+  if (tg.BackButton) tg.BackButton.onClick(() => go(PARENT[view] || "home"));
+}
+if (store.get("age20") === "1") $("#gate").style.display = "none";
+applyLang();
+
+// กติกาแต้มและของรางวัลจาก config.json (ไฟล์เดียวกับที่บอทใช้)
+fetch("config.json", { cache: "no-store" }).then((r) => r.ok ? r.json() : null).then((c) => {
+  if (!c) return;
+  if (c.baht_per_point > 0) LOYALTY.bahtPerPoint = +c.baht_per_point;
+  if (c.points_per_visit >= 0) LOYALTY.pointsPerVisit = +c.points_per_visit;
+  if (Array.isArray(c.rewards)) LOYALTY.rewards = c.rewards.filter((r) => r && r.id && r.cost > 0 && r.label);
+  renderMember();
+}).catch(() => {});
+</script>
+</body>
+</html>
