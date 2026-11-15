@@ -8,31 +8,114 @@
     { "id": "disc120", "cost": 20, "label": { "th": "ส่วนลด ฿120", "en": "฿120 off" } },
     { "id": "disc350", "cost": 50, "label": { "th": "ส่วนลด ฿350", "en": "฿350 off" } }
   ],
+  "roll": {
+    "sizes": [
+      { "g": 1, "fee": 20 },
+      { "g": 2, "fee": 50 }
+    ],
+    "filters": [
+      { "id": "paper", "fee": 0, "label": { "th": "ก้นกรองกระดาษ", "en": "Paper filter" } },
+      { "id": "glass", "fee": 0, "label": { "th": "ก้นกรองแก้ว", "en": "Glass filter" } }
+    ],
+    "free_min_grams": 0
+  },
+  "gift": {
+    "per_grams": 3,
+    "min_baht": 0,
+    "label": { "th": "พันลำฟรี", "en": "Free pre-roll" }
+  },
+  "delivery": {
+    "pickup": true,
+    "free_min_baht": 400,
+    "free_km": 8,
+    "per_km": [40, 100],
+    "night": { "from_hour": 0, "to_hour": 5, "fee": 100 }
+  },
+  "payments": {
+    "methods": ["cash", "qr"],
+    "card_fee_percent": 4
+  },
   "promos": [
+    {
+      "ico": "🎁",
+      "title": { "th": "3 แถม พันลำ", "en": "Every 3 g, a free pre-roll" },
+      "text":  { "th": "ซื้อดอกทุก 3 กรัม รับพันลำฟรี 1 ลำทันที", "en": "Get 1 free pre-roll for every 3 g of flower" },
+      "when":  { "th": "ทุก 3 กรัม", "en": "Every 3 g" }
+    },
+    {
+      "ico": "🛵",
+      "title": { "th": "ส่งฟรี ยอดครบ ฿400", "en": "Free delivery from ฿400" },
+      "text":  { "th": "ส่งฟรีในระยะ 8 กม. เกินกว่านั้นคิดเพิ่มตามระยะทาง", "en": "Free within 8 km. Farther than that, a per-km fee applies" },
+      "when":  { "th": "หรือรับเองที่ร้าน", "en": "Or pick up at the shop" }
+    },
     {
       "ico": "⭐",
       "title": { "th": "สะสมแต้ม 2 ทาง", "en": "Earn points two ways" },
       "text":  { "th": "ทุก ฿100 = 1 แต้ม และมา 1 ครั้ง = 1 แต้ม", "en": "Every ฿100 = 1 point, and each visit = 1 point" },
       "when":  { "th": "สมาชิกทุกคน", "en": "All members" }
-    },
-    {
-      "ico": "🎁",
-      "title": { "th": "(ตัวอย่าง) แลก 10 แต้ม รับส่วนลด ฿50", "en": "(Sample) 10 points = ฿50 off" },
-      "text":  { "th": "กดแลกได้ที่หน้าสมาชิก", "en": "Redeem on the Member tab" }
     }
   ],
   "events": [
     {
-      "ico": "🌇",
-      "title": { "th": "(ตัวอย่าง) Sunset Session", "en": "(Sample) Sunset Session" },
-      "text":  { "th": "เพลงชิล ๆ รับลมทะเลยามเย็น", "en": "Chill music and a sea breeze at dusk" },
-      "when":  { "th": "ทุกวันศุกร์ 17:00", "en": "Fridays 17:00" }
-    },
-    {
-      "ico": "🌕",
-      "title": { "th": "(ตัวอย่าง) Full Moon Week", "en": "(Sample) Full Moon Week" },
-      "text":  { "th": "กิจกรรมพิเศษสำหรับสมาชิกช่วงพระจันทร์เต็มดวง", "en": "Member specials during full moon week" },
-      "when":  { "th": "เร็ว ๆ นี้", "en": "Coming soon" }
+      "ico": "🔥",
+      "title": { "th": "Friday Session: Live Rosin", "en": "Friday Session: Live Rosin" },
+      "text":  { "th": "เซสชัน Live Rosin ประจำสัปดาห์", "en": "Our weekly Live Rosin session" },
+      "when":  { "th": "ทุกวันศุกร์", "en": "Every Friday" }
     }
-  ]
+  ],
+  "items": {
+    "sativa": [
+      { "id": "sugar-mommy", "name": "Sugar Mommy", "img": null, "price": 250, "unit": "g", "thc": "26%", "cbd": "",
+        "ratio": "70% Sativa", "grow": "Homegrown · Living Soil",
+        "effects": { "th": ["สร้างสรรค์", "สดชื่น", "มีสมาธิ"], "en": ["Creative", "Uplifting", "Focused"] } },
+      { "id": "fruit-king", "name": "Fruit King", "img": null, "price": 250, "unit": "g", "thc": "27%", "cbd": "",
+        "ratio": "60% Sativa", "grow": "Homegrown organic",
+        "effects": { "th": ["สดชื่น", "อารมณ์ดี"], "en": ["Uplifted", "Happy"] } },
+      { "id": "super-boof", "name": "Super Boof", "img": null, "price": 120, "unit": "g", "thc": "24%", "cbd": "",
+        "ratio": "60% Sativa", "grow": "Homegrown organic",
+        "effects": { "th": ["สร้างสรรค์", "อารมณ์ดี", "มีสมาธิ"], "en": ["Creative", "Happy", "Focused"] } },
+      { "id": "blue-dream", "name": "Blue Dream", "img": null, "price": null, "unit": "g", "thc": "21%", "cbd": "",
+        "ratio": "Sativa Hybrid", "grow": "",
+        "effects": { "th": ["สร้างสรรค์", "เคลิ้มสุข"], "en": ["Creative", "Euphoric"] },
+        "flavors": { "th": ["บลูเบอร์รี", "หวาน", "วานิลลา", "สมุนไพร"], "en": ["Blueberry", "Sweet", "Vanilla", "Herbal"] },
+        "parents": "Blueberry × Haze" }
+    ],
+    "indica": [
+      { "id": "glitter-bomb", "name": "Glitter Bomb", "img": null, "price": 250, "unit": "g", "thc": "27–29%", "cbd": "",
+        "ratio": "70% Indica", "grow": "Homegrown organic",
+        "effects": { "th": ["ซ่า", "เคลิ้มสุข", "ผ่อนคลาย"], "en": ["Tingly", "Euphoric", "Relaxed"] } },
+      { "id": "dark-passenger", "name": "Dark Passenger", "img": null, "price": 120, "unit": "g", "thc": "24%", "cbd": "",
+        "ratio": "70% Indica", "grow": "Homegrown organic",
+        "effects": { "th": ["สงบ", "อารมณ์ดี", "ผ่อนคลายลึก"], "en": ["Calming", "Happy", "Deep relaxing"] } },
+      { "id": "mango-cbd", "name": "Mango CBD", "img": null, "price": 150, "unit": "g", "thc": "12%", "cbd": "15%",
+        "ratio": "60% Indica", "grow": "Homegrown organic",
+        "effects": { "th": ["ฟินทั้งตัว", "สงบ", "อารมณ์ดี"], "en": ["Body high", "Calming", "Happy"] } }
+    ],
+    "hybrid": [
+      { "id": "any-day", "name": "Any Day", "img": null, "price": 220, "unit": "g", "thc": "27%", "cbd": "",
+        "ratio": "50 : 50", "grow": "Homegrown organic",
+        "effects": { "th": ["ฟินทั้งตัว", "เคลิ้มสุข"], "en": ["Body high", "Euphoria"] } },
+      { "id": "neon-runtz", "name": "Neon Runtz", "img": null, "price": 200, "unit": "g", "thc": "25%", "cbd": "",
+        "ratio": "60% Sativa", "grow": "Homegrown organic",
+        "effects": { "th": ["อารมณ์ดี", "สงบ", "สร้างสรรค์"], "en": ["Happy", "Calming", "Creative"] } },
+      { "id": "alien-mints", "name": "Alien Mints", "img": null, "price": 180, "unit": "g", "thc": "25%", "cbd": "",
+        "ratio": "60% Indica", "grow": "Homegrown organic",
+        "effects": { "th": ["สงบ", "สดชื่น", "ผ่อนคลาย"], "en": ["Calming", "Uplifting", "Relaxed"] } },
+      { "id": "cherry-zoap", "name": "Cherry Zoap", "img": null, "price": 180, "unit": "g", "thc": "25%", "cbd": "",
+        "ratio": "50 : 50", "grow": "Homegrown organic",
+        "effects": { "th": ["สมดุล", "เคลิ้มสุข", "หัวเราะง่าย"], "en": ["Balance", "Euphoria", "Giggly"] } },
+      { "id": "blue-zangria", "name": "Blue Zangria", "img": null, "price": 180, "unit": "g", "thc": "25%", "cbd": "",
+        "ratio": "50 : 50", "grow": "Homegrown organic",
+        "effects": { "th": ["ฟินทั้งตัว", "สร้างสรรค์", "ซ่า"], "en": ["Body high", "Creative", "Tingly"] } },
+      { "id": "pink-giraffe", "name": "Pink Giraffe", "img": null, "price": null, "unit": "g", "thc": "31%", "cbd": "",
+        "ratio": "50 : 50", "grow": "",
+        "effects": { "th": ["เคลิ้มสุข", "ผ่อนคลาย", "หัวเราะง่าย", "เข้าสังคม"], "en": ["Euphoric", "Relaxing", "Giggly", "Sociable"] },
+        "flavors": { "th": ["มะนาว", "ลูกอมเบอร์รี", "ซิตรัส", "เปรี้ยว"], "en": ["Lime", "Berry candy", "Citrus", "Sour"] } }
+    ],
+    "edible": [
+      { "id": "butter-cookie", "name": { "th": "คุกกี้เนยออแกนิค", "en": "Organic Butter Cookie" }, "img": null, "price": 50, "unit": "pc",
+        "thc": "", "cbd": "", "ratio": "", "grow": "",
+        "effects": { "th": [], "en": [] } }
+    ]
+  }
 }

@@ -21,7 +21,7 @@
   html, body { margin: 0; background: var(--bg); color: var(--text);
     font-family: -apple-system, "Segoe UI", "Noto Sans Thai", "Leelawadee UI", Roboto, sans-serif;
     font-size: 16px; line-height: 1.55; }
-  body { padding: 0 16px 104px; max-width: 640px; margin: 0 auto; min-height: 100vh; }
+  body { padding: 0 16px 160px; max-width: 640px; margin: 0 auto; min-height: 100vh; }
   .gold { background: var(--metal); -webkit-background-clip: text; background-clip: text; color: transparent; }   /* หัวข้อและตัวเลขเด่น */
   header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; margin: 0 -16px;
     position: sticky; top: 0; background: #0d0b07; z-index: 5; }
@@ -67,7 +67,7 @@
     font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
   .center { text-align: center; }
   .price { font-size: 26px; font-weight: 800; margin: 6px 0 2px; }
-  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0 4px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 10px; margin: 14px 0 4px; }
   .stats div { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px; text-align: center; }
   .stats small { display: block; color: var(--hint); font-size: 11px; letter-spacing: .1em; }
   .stats b { font-size: 16px; }
@@ -154,6 +154,31 @@
   .calc b { white-space: nowrap; font-size: 16px; }
   .search { text-align: center; }
   .empty { color: var(--hint); text-align: center; font-size: 14px; margin-top: 18px; }
+
+  /* สั่งซื้อและตะกร้า / ordering and cart */
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 0; }
+  .row.tot { border-top: 1px solid var(--line); margin-top: 8px; padding-top: 12px; font-size: 17px; }
+  .row small { color: var(--hint); }
+  .stepper { display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--line); border-radius: 999px; padding: 3px; flex: none; }
+  .stepper button { width: 34px; height: 34px; border-radius: 50%; border: 0; background: var(--card2); color: var(--gold-soft);
+    font: inherit; font-size: 20px; font-weight: 700; line-height: 1; cursor: pointer; }
+  .stepper b { min-width: 34px; text-align: center; font-size: 16px; }
+  .opts { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 4px; }
+  .opts button { flex: 1; min-width: 120px; border: 1px solid var(--line); background: var(--card); color: var(--text);
+    border-radius: 12px; padding: 10px 8px; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .opts button.on { background: var(--metal); color: var(--ink); border-color: transparent; }
+  .optlabel { font-size: 12px; color: var(--hint); margin-top: 8px; }
+  .line { display: flex; align-items: center; gap: 10px; background: var(--card); border: 1px solid var(--line);
+    border-radius: 14px; padding: 10px 12px; margin-bottom: 8px; }
+  .line .what { flex: 1; min-width: 0; font-size: 14px; }
+  .line .what b { display: block; font-size: 15px; }
+  .line .what small { display: block; color: var(--hint); font-size: 12px; }
+  .line .sum { font-weight: 800; white-space: nowrap; }
+  .cartbar { position: fixed; left: 12px; right: 12px; bottom: calc(70px + env(safe-area-inset-bottom)); z-index: 9;
+    max-width: 616px; margin: 0 auto; display: none; align-items: center; justify-content: space-between; gap: 10px;
+    background: var(--metal); color: var(--ink); border: 0; border-radius: 16px; padding: 13px 16px;
+    font: inherit; font-weight: 800; font-size: 15px; cursor: pointer; box-shadow: var(--shadow); }
+  .cartbar.show { display: flex; }
 
   .note { border: 1px solid var(--line); border-left: 3px solid var(--gold); background: var(--card);
     border-radius: 10px; padding: 10px 12px; font-size: 13px; color: var(--hint); margin: 18px 0; }
@@ -258,6 +283,14 @@
   <div id="detail"></div>
 </div>
 
+<!-- CART -->
+<div class="view" id="v-cart">
+  <button class="back" data-go="cats" data-i18n="backMenu"></button>
+  <h1 class="gold" data-i18n="cTitle"></h1>
+  <div class="rule"></div>
+  <div id="cart"></div>
+</div>
+
 <!-- LEARN: คู่มือเสียง + ใบ ภ.ท.33 -->
 <div class="view" id="v-learn">
   <h1 class="gold" data-i18n="learnTitle"></h1>
@@ -297,6 +330,8 @@
 
 <footer data-i18n="footer"></footer>
 
+<button class="cartbar" id="cartBar" data-go="cart"><span id="cartBarText"></span><span data-i18n="cOpen"></span></button>
+
 <nav class="tabbar">
   <button data-go="home" data-tab="home"><span>🏠</span><b data-i18n="tabHome"></b></button>
   <button data-go="cats" data-tab="menu"><span>🌸</span><b data-i18n="tabMenu"></b></button>
@@ -319,7 +354,7 @@ const I18N = {
     noPromo: "ยังไม่มีโปรโมชั่นในตอนนี้", noEvent: "ยังไม่มีกิจกรรมในตอนนี้",
     learnTitle: "เรียนรู้", segGuide: "🎧 วิธีใช้", segPt33: "📋 ใบ ภ.ท.33",
     mFlowers: "ดอกไม้ออแกนิค",
-    homeNote: "เพื่อการศึกษา · ไม่มีการสั่งซื้อผ่านแอพ · 20+",
+    homeNote: "สำหรับผู้มีอายุ 20 ปีขึ้นไปเท่านั้น",
     back: "‹ หน้าหลัก", backCats: "‹ หมวดหมู่", backList: "‹ รายการ",
     items: "รายการ", searchPh: "🔍 ค้นหาสายพันธุ์ กลิ่น เอฟเฟค", searchNone: "ไม่พบรายการที่ค้นหา",
     mMember: "สมาชิก", ptsWord: "แต้ม", memberWord: "MEMBER", noName: "สมาชิก POM",
@@ -331,7 +366,27 @@ const I18N = {
     rewardsTitle: "แลกแต้ม", redeem: "แลก", need: (n) => `ขาดอีก ${n} แต้ม`, cost: (n) => `ใช้ ${n} แต้ม`,
     confirmRedeem: (l, c) => `แลก “${l}” ด้วย ${c} แต้ม?`, redeemOnlyTg: "แลกแต้มได้เมื่อเปิดแอพจากปุ่มของบอทใน Telegram",
     vouchersTitle: "คูปองของคุณ",
-    unitG: "/ กรัม", unitPc: "/ ชิ้น", unitRoll: "/ มวน",
+    unitG: "/ กรัม", unitPc: "/ ชิ้น", uG: "กรัม", uPc: "ชิ้น", askPrice: "สอบถามราคา", dType: "สัดส่วน",
+    menuEmpty: "กำลังโหลดเมนู…", backMenu: "‹ เมนู",
+    oTitle: "🛒 สั่งซื้อ", oQtyG: "จำนวน (กรัม)", oQtyPc: "จำนวน (ชิ้น)", oRoll: "พันลำให้ด้วย", oSize: "ขนาดลำ", oFilter: "ก้นกรอง",
+    oSizeBtn: (g, fee) => `${g} กรัม/ลำ (+฿${fee})`, joints: (n) => `${n} ลำ`, oRollNone: "จำนวนกรัมยังไม่พอสำหรับขนาดลำนี้",
+    oRollNote: (n, fee) => `พันได้ ${n} ลำ · ค่าพัน ฿${fee}`, oSum: "รวมรายการนี้", oAdd: "เพิ่มลงตะกร้า", oAdded: "เพิ่มลงตะกร้าแล้ว ✓",
+    oNoPrice: "รายการนี้ยังไม่ระบุราคา กรุณาสอบถามทางแชท",
+    cTitle: "ตะกร้า", cOpen: "ดูตะกร้า ➜", cBar: (n, total) => `🛒 ${n} รายการ · ฿${total}`, cEmpty: "ยังไม่มีสินค้าในตะกร้า",
+    cRolled: (g, n, f) => `พัน ${g} กรัม × ${n} ลำ · ${f}`, cItems: "ค่าสินค้า", cRoll: "ค่าพันลำ",
+    cGift: (l, n) => `รับ${l} ${n} ลำ`,
+    cGiftMore: (g, l) => `ซื้อดอกอีก ${g} กรัม รับ${l}เพิ่ม 1 ลำ`,
+    cMethod: "การรับสินค้า", mDelivery: "🛵 จัดส่ง", mPickup: "🏪 รับเองที่ร้าน", payCash: "💵 เงินสด", payQr: "📱 QR ธนาคาร",
+    cShip: "ค่าส่ง", cTotalNoShip: "รวม (ยังไม่รวมค่าส่ง)",
+    shipFree: (km, lo, hi) => `ฟรีในระยะ ${km} กม.<br>เกิน ${km} กม. +฿${lo}–${hi}/กม.`,
+    shipQuote: (lo, hi, more) => `฿${lo}–${hi}/กม. ร้านแจ้งหลังได้ตำแหน่ง<br>ซื้อเพิ่มอีก ฿${more} ส่งฟรี`,
+    shipNight: (fee) => `🌙 ช่วงกลางคืน +฿${fee}`,
+    cPickupNote: "ร้านจะยืนยันออเดอร์ในแชท แล้วมารับที่ร้านได้เลย",
+    cFree: (n) => `🎁 ครบ ${n} กรัม พันลำฟรี`, cMore: (m) => `ซื้อดอกเพิ่มอีก ${m} กรัม พันลำฟรี`,
+    cPay: "วิธีชำระเงิน", payBtc: "₿ Bitcoin", payCard: (p) => `💳 บัตร (+${p}%)`, cCardFee: (p) => `ค่าธรรมเนียมบัตร ${p}%`,
+    cTotal: "รวมทั้งหมด", cNote: "หมายเหตุถึงร้าน (ไม่บังคับ)", cSend: "ส่งคำสั่งซื้อ",
+    cPayNote: "หลังกดส่ง บอทจะขอตำแหน่งจัดส่งในแชท แล้วร้านจะแจ้งค่าส่งและยอดรวม",
+    cOnlyTg: "สั่งซื้อได้เมื่อเปิดแอพจากปุ่มของบอทใน Telegram",
     dAbout: "รายละเอียด", dEffects: "เอฟเฟค", dFlavors: "รสชาติ", dParents: "พ่อแม่พันธุ์",
     ptTitle: "ใบ ภ.ท.33",
     ptSub: "กรอกข้อมูลเบื้องต้นเพื่อส่งให้ผู้ประกอบวิชาชีพประเมิน",
@@ -363,7 +418,7 @@ const I18N = {
     noPromo: "No promotions right now", noEvent: "No events right now",
     learnTitle: "Learn", segGuide: "🎧 How to use", segPt33: "📋 PT.33 form",
     mFlowers: "Organic Flowers",
-    homeNote: "Education only · No ordering in the app · 20+",
+    homeNote: "For ages 20 and over only",
     back: "‹ Home", backCats: "‹ Categories", backList: "‹ List",
     items: "items", searchPh: "🔍 Search strain, flavor, effect", searchNone: "Nothing matches your search",
     mMember: "Member", ptsWord: "points", memberWord: "MEMBER", noName: "POM member",
@@ -375,7 +430,27 @@ const I18N = {
     rewardsTitle: "Rewards", redeem: "Redeem", need: (n) => `${n} more points`, cost: (n) => `${n} points`,
     confirmRedeem: (l, c) => `Redeem “${l}” for ${c} points?`, redeemOnlyTg: "Redeeming works when the app is opened from the bot's button in Telegram.",
     vouchersTitle: "Your vouchers",
-    unitG: "/ gram", unitPc: "/ piece", unitRoll: "/ roll",
+    unitG: "/ gram", unitPc: "/ piece", uG: "g", uPc: "pc", askPrice: "Ask for price", dType: "Type",
+    menuEmpty: "Loading menu…", backMenu: "‹ Menu",
+    oTitle: "🛒 Order", oQtyG: "Amount (grams)", oQtyPc: "Quantity", oRoll: "Roll it for me", oSize: "Joint size", oFilter: "Filter",
+    oSizeBtn: (g, fee) => `${g} g per joint (+฿${fee})`, joints: (n) => `${n} joint${n === 1 ? "" : "s"}`, oRollNone: "Not enough grams for this joint size",
+    oRollNote: (n, fee) => `${n} joint${n === 1 ? "" : "s"} · rolling ฿${fee}`, oSum: "This item", oAdd: "Add to cart", oAdded: "Added to cart ✓",
+    oNoPrice: "No price listed yet. Please ask us in chat.",
+    cTitle: "Cart", cOpen: "View cart ➜", cBar: (n, total) => `🛒 ${n} item${n === 1 ? "" : "s"} · ฿${total}`, cEmpty: "Your cart is empty",
+    cRolled: (g, n, f) => `Rolled ${g} g × ${n} · ${f}`, cItems: "Items", cRoll: "Rolling",
+    cGift: (l, n) => `${l} × ${n}`,
+    cGiftMore: (g, l) => `Add ${g} g more flower for 1 more ${l.toLowerCase()}`,
+    cMethod: "How to get it", mDelivery: "🛵 Delivery", mPickup: "🏪 Pick up", payCash: "💵 Cash", payQr: "📱 Thai bank QR",
+    cShip: "Delivery", cTotalNoShip: "Total (before delivery)",
+    shipFree: (km, lo, hi) => `Free within ${km} km<br>Beyond ${km} km: +฿${lo}–${hi}/km`,
+    shipQuote: (lo, hi, more) => `฿${lo}–${hi}/km, confirmed once we have your location<br>Add ฿${more} more for free delivery`,
+    shipNight: (fee) => `🌙 Night delivery +฿${fee}`,
+    cPickupNote: "We'll confirm in chat, then come pick it up.",
+    cFree: (n) => `🎁 ${n} g or more: rolling is free`, cMore: (m) => `Add ${m} g more flower for free rolling`,
+    cPay: "Payment", payBtc: "₿ Bitcoin", payCard: (p) => `💳 Card (+${p}%)`, cCardFee: (p) => `Card fee ${p}%`,
+    cTotal: "Total", cNote: "Note to the shop (optional)", cSend: "Send order",
+    cPayNote: "After you send, the bot asks for your delivery location in chat, then we confirm the delivery fee and total.",
+    cOnlyTg: "Ordering works when the app is opened from the bot's button in Telegram.",
     dAbout: "About", dEffects: "Effects", dFlavors: "Flavors", dParents: "Lineage",
     ptTitle: "PT.33 Form",
     ptSub: "Fill in basic details to send to a practitioner for assessment",
@@ -400,18 +475,26 @@ const I18N = {
 };
 
 /* ============================================================
-   2) หมวดและสินค้า (ตัวอย่าง — แก้ไขได้ที่นี่)
-      Categories and products (samples — edit here)
-      img:   ใส่ path รูป เช่น "img/sour-diesel.jpg" (ถ้าเว้น null จะแสดงไอคอนแทน)
-      price: ราคา (บาท)   unit: "unitG" ต่อกรัม | "unitPc" ต่อชิ้น | "unitRoll" ต่อมวน
+   2) หมวดสินค้า — ตัวสินค้าและราคาอยู่ในไฟล์ config.json ("items")
+      บอทอ่านราคาจากไฟล์เดียวกัน ราคาในออเดอร์จึงตรงกับในแอพเสมอ
    ============================================================ */
 const CATS = [
   { id: "sativa",  label: "Sativa",   ico: "🌅", name: { th: "ตะวันขึ้น",   en: "Sunrise" } },
   { id: "indica",  label: "Indica",   ico: "🌙", name: { th: "แสงจันทร์",   en: "Moonlight" } },
   { id: "hybrid",  label: "Hybrid",   ico: "🌇", name: { th: "ตะวันตกดิน", en: "Sunset" } },
-  { id: "edible",  label: "Edible",   ico: "🍪", name: { th: "ของว่างริมหาด", en: "Beach Bites" } },
-  { id: "preroll", label: "Pre-roll", ico: "🌴", name: { th: "มวนพร้อมชิล", en: "Easy Roll" } }
+  { id: "edible",  label: "Edible",   ico: "🍪", name: { th: "ของว่างริมหาด", en: "Beach Bites" } }
 ];
+const PRODUCTS = { sativa: [], indica: [], hybrid: [], edible: [] };   // เติมจาก config.json
+// ค่าพันลำ โปร และวิธีชำระเงิน (ของจริงมาจาก config.json: "roll" และ "payments")
+const SHOP = {
+  roll: { sizes: [{ g: 1, fee: 20 }, { g: 2, fee: 50 }],
+          filters: [{ id: "paper", fee: 0, label: { th: "ก้นกรองกระดาษ", en: "Paper filter" } },
+                    { id: "glass", fee: 0, label: { th: "ก้นกรองแก้ว", en: "Glass filter" } }],
+          freeMinGrams: 3 },
+  pays: ["cash", "qr"], cardFeePercent: 4,   // วิธีชำระเงินที่เปิดใช้ ("btc" และ "card" เก็บไว้ใช้ในอนาคต)
+  gift: null,   // ของแถมทุก perGrams กรัม: { perGrams, minBaht, label } จาก config.json "gift"
+  ship: { pickup: true, freeMinBaht: 400, freeKm: 8, perKm: [40, 100], night: { from: 0, to: 5, fee: 100 } }   // จาก "delivery"
+};
 
 /* ============================================================
    2.2) หน้าหลัก: โปรโมชั่นและกิจกรรม
@@ -419,87 +502,6 @@ const CATS = [
    แต่ละรายการ: { ico, title: {th,en}, text: {th,en}, when: {th,en} (ไม่บังคับ) }
    ============================================================ */
 const HOME = { promos: [], events: [] };
-const PRODUCTS = {
-  sativa: [
-    { name: "Sour Diesel", img: null, price: 450, unit: "unitG", thc: "20–25%", cbd: "<1%",
-      desc: { th: "ดอกสีเขียวอ่อน ขนส้ม ไตรโคมแน่น", en: "Light green buds, orange hairs, dense trichomes" },
-      effects: { th: ["ตื่นตัว", "สดชื่น", "สร้างสรรค์"], en: ["Energetic", "Uplifting", "Creative"] },
-      flavors: { th: ["ดีเซล", "ส้ม", "ดิน"], en: ["Diesel", "Citrus", "Earthy"] },
-      parents: "Chemdawg × Super Skunk" },
-    { name: "Jack Herer", img: null, price: 480, unit: "unitG", thc: "18–23%", cbd: "<1%",
-      desc: { th: "ดอกเรียวยาว เรซินเหนียว กลิ่นสนชัด", en: "Elongated buds, sticky resin, strong pine nose" },
-      effects: { th: ["สมาธิ", "อารมณ์ดี", "ปลอดโปร่ง"], en: ["Focused", "Happy", "Clear-headed"] },
-      flavors: { th: ["สน", "เครื่องเทศ", "ไม้"], en: ["Pine", "Spice", "Wood"] },
-      parents: "Haze × Northern Lights #5 × Shiva Skunk" },
-    { name: "Durban Poison", img: null, price: 420, unit: "unitG", thc: "17–24%", cbd: "<1%",
-      desc: { th: "ดอกกลมใหญ่ ไตรโคมหนา สายพันธุ์แท้", en: "Chunky round buds, heavy trichomes, pure landrace" },
-      effects: { th: ["กระปรี้กระเปร่า", "ตื่นตัว", "สดใส"], en: ["Lively", "Alert", "Bright"] },
-      flavors: { th: ["หวาน", "โป๊ยกั๊ก", "สน"], en: ["Sweet", "Anise", "Pine"] },
-      parents: "South African Landrace" }
-  ],
-  indica: [
-    { name: "Northern Lights", img: null, price: 430, unit: "unitG", thc: "16–21%", cbd: "<1%",
-      desc: { th: "ดอกแน่น เรซินเยอะ แซมสีม่วง", en: "Dense resinous buds with purple hues" },
-      effects: { th: ["ผ่อนคลาย", "สงบ", "ง่วง"], en: ["Relaxed", "Calm", "Sleepy"] },
-      flavors: { th: ["ดิน", "สน", "หวาน"], en: ["Earthy", "Pine", "Sweet"] },
-      parents: "Afghani × Thai" },
-    { name: "Granddaddy Purple", img: null, price: 500, unit: "unitG", thc: "17–23%", cbd: "<1%",
-      desc: { th: "ดอกใหญ่สีม่วงเข้ม ไตรโคมขาวฟู", en: "Large deep-purple buds with frosty trichomes" },
-      effects: { th: ["ผ่อนคลาย", "ง่วง", "เคลิ้ม"], en: ["Relaxed", "Sleepy", "Euphoric"] },
-      flavors: { th: ["องุ่น", "เบอร์รี", "หวาน"], en: ["Grape", "Berry", "Sweet"] },
-      parents: "Purple Urkle × Big Bud" },
-    { name: "Bubba Kush", img: null, price: 460, unit: "unitG", thc: "15–22%", cbd: "<1%",
-      desc: { th: "ดอกเล็กแน่น สีเขียวเข้มอมม่วง", en: "Small tight buds, dark green to purple" },
-      effects: { th: ["สงบ", "หนักตัว", "ผ่อนคลาย"], en: ["Calm", "Heavy-bodied", "Relaxed"] },
-      flavors: { th: ["กาแฟ", "ช็อกโกแลต", "ดิน"], en: ["Coffee", "Chocolate", "Earthy"] },
-      parents: "OG Kush × Unknown Indica" }
-  ],
-  hybrid: [
-    { name: "Blue Dream", img: null, price: 450, unit: "unitG", thc: "17–24%", cbd: "<1%",
-      desc: { th: "ดอกฟู ขนส้ม กลิ่นเบอร์รีหวาน", en: "Fluffy buds, orange hairs, sweet berry nose" },
-      effects: { th: ["สมดุล", "อารมณ์ดี", "ผ่อนคลายเบา ๆ"], en: ["Balanced", "Happy", "Gently relaxed"] },
-      flavors: { th: ["บลูเบอร์รี", "หวาน", "สมุนไพร"], en: ["Blueberry", "Sweet", "Herbal"] },
-      parents: "Blueberry × Haze" },
-    { name: "Gelato", img: null, price: 550, unit: "unitG", thc: "20–25%", cbd: "<1%",
-      desc: { th: "ดอกแน่น สีม่วงแซมส้ม ไตรโคมขาว", en: "Dense purple buds, orange hairs, white trichomes" },
-      effects: { th: ["อารมณ์ดี", "ผ่อนคลาย", "เคลิ้ม"], en: ["Happy", "Relaxed", "Euphoric"] },
-      flavors: { th: ["ครีม", "ผลไม้", "หวาน"], en: ["Creamy", "Fruity", "Sweet"] },
-      parents: "Sunset Sherbet × Thin Mint GSC" },
-    { name: "Wedding Cake", img: null, price: 600, unit: "unitG", thc: "22–27%", cbd: "<1%",
-      desc: { th: "ดอกหนาแน่น ไตรโคมขาวโพลน ฤทธิ์แรง", en: "Thick buds caked in trichomes, potent" },
-      effects: { th: ["ผ่อนคลาย", "เคลิ้ม", "หิว"], en: ["Relaxed", "Euphoric", "Hungry"] },
-      flavors: { th: ["วานิลลา", "พริกไทย", "หวาน"], en: ["Vanilla", "Pepper", "Sweet"] },
-      parents: "Triangle Kush × Animal Mints" }
-  ],
-  edible: [
-    { name: { th: "กัมมี่ผลไม้", en: "Fruit Gummies" }, img: null, price: 150, unit: "unitPc", thc: "5 mg", cbd: "–",
-      desc: { th: "กัมมี่ชิ้นเล็ก ออกฤทธิ์ใน 30–120 นาที", en: "Small gummy, onset in 30–120 minutes" },
-      effects: { th: ["ผ่อนคลาย", "ฤทธิ์นาน"], en: ["Relaxed", "Long lasting"] },
-      flavors: { th: ["ผลไม้รวม"], en: ["Mixed fruit"] }, parents: null },
-    { name: { th: "บราวนี่", en: "Brownie" }, img: null, price: 250, unit: "unitPc", thc: "10 mg", cbd: "–",
-      desc: { th: "บราวนี่ช็อกโกแลต ฤทธิ์นาน 4–8 ชั่วโมง", en: "Chocolate brownie, lasts 4–8 hours" },
-      effects: { th: ["ผ่อนคลายลึก", "ง่วง"], en: ["Deeply relaxed", "Sleepy"] },
-      flavors: { th: ["ช็อกโกแลต"], en: ["Chocolate"] }, parents: null },
-    { name: { th: "คุกกี้ CBD", en: "CBD Cookie" }, img: null, price: 180, unit: "unitPc", thc: "2 mg", cbd: "20 mg",
-      desc: { th: "คุกกี้เนย THC ต่ำ เหมาะกับผู้เริ่มต้น", en: "Butter cookie, low THC, beginner friendly" },
-      effects: { th: ["สงบ", "อ่อน"], en: ["Calm", "Mild"] },
-      flavors: { th: ["เนย", "วานิลลา"], en: ["Butter", "Vanilla"] }, parents: null }
-  ],
-  preroll: [
-    { name: "Sativa Pre-roll 1g", img: null, price: 300, unit: "unitRoll", thc: "18–22%", cbd: "<1%",
-      desc: { th: "มวนสำเร็จ 1 กรัม ดอกล้วน", en: "1 g ready-rolled, flower only" },
-      effects: { th: ["ตื่นตัว", "สดชื่น"], en: ["Energetic", "Uplifting"] },
-      flavors: { th: ["ส้ม", "สน"], en: ["Citrus", "Pine"] }, parents: null },
-    { name: "Indica Pre-roll 1g", img: null, price: 300, unit: "unitRoll", thc: "18–22%", cbd: "<1%",
-      desc: { th: "มวนสำเร็จ 1 กรัม ดอกล้วน", en: "1 g ready-rolled, flower only" },
-      effects: { th: ["ผ่อนคลาย", "ง่วง"], en: ["Relaxed", "Sleepy"] },
-      flavors: { th: ["ดิน", "เบอร์รี"], en: ["Earthy", "Berry"] }, parents: null },
-    { name: "Hybrid Pre-roll 0.5g", img: null, price: 180, unit: "unitRoll", thc: "20–24%", cbd: "<1%",
-      desc: { th: "มวนเล็ก 0.5 กรัม ใช้ครั้งเดียว", en: "Small 0.5 g roll, single session" },
-      effects: { th: ["สมดุล", "อารมณ์ดี"], en: ["Balanced", "Happy"] },
-      flavors: { th: ["หวาน", "ครีม"], en: ["Sweet", "Creamy"] }, parents: null }
-  ]
-};
 
 /* ============================================================
    2.5) สมาชิกและสะสมแต้ม / Membership and points
@@ -595,13 +597,63 @@ let lang = store.get("lang")
   || ((navigator.language || "").toLowerCase().startsWith("th") ? "th" : null)
   || (inTelegram ? "en" : "th");
 let view = "home", curCat = "sativa", curItem = 0;
-const PARENT = { list: "cats", detail: "list" };   // หน้าที่มีปุ่มย้อนกลับ หน้าอื่นเป็นแท็บ
+const PARENT = { list: "cats", detail: "list", cart: "cats" };   // หน้าที่มีปุ่มย้อนกลับ หน้าอื่นเป็นแท็บ
 const pick = (v) => (v && typeof v === "object" && !Array.isArray(v)) ? v[lang] : v;
 const t = (k) => I18N[lang][k];
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const cat = () => CATS.find((c) => c.id === curCat);
 const picHtml = (p, ico) => `<div class="pic">${p.img ? `<img src="${esc(p.img)}" alt="${esc(pick(p.name))}" loading="lazy">` : ico}</div>`;
-const priceHtml = (p) => `฿${Number(p.price).toLocaleString("en-US")} <small>${t(p.unit)}</small>`;
+const baht = (n) => Number(n).toLocaleString("en-US");
+const priceHtml = (p) => p.price == null ? `<small>${t("askPrice")}</small>`
+  : `฿${baht(p.price)} <small>${t(p.unit === "pc" ? "unitPc" : "unitG")}</small>`;
+const list = (v) => (v && Array.isArray(v[lang])) ? v[lang] : [];   // effects / flavors ของภาษาปัจจุบัน
+
+/* ---- ตะกร้า / cart ----  แต่ละรายการ: { id, qty, roll: null | { size, filter } } */
+let cart = [];
+try { cart = JSON.parse(store.get("cart") || "[]"); } catch (e) { cart = []; }
+if (!Array.isArray(cart)) cart = [];
+let pay = "cash", method = "delivery";   // วิธีชำระเงิน และ จัดส่ง/รับเอง
+const order = { qty: 1, roll: false, size: 1, filter: "paper" };   // ตัวเลือกบนหน้ารายละเอียดสินค้า
+function findItem(id) {
+  for (const c of CATS) {
+    const i = PRODUCTS[c.id].findIndex((p) => p.id === id);
+    if (i >= 0) return { p: PRODUCTS[c.id][i], c, i };
+  }
+  return null;
+}
+function rollInfo(qty, roll) {   // จำนวนลำและค่าพันของรายการเดียว
+  if (!roll) return { n: 0, fee: 0 };
+  const s = SHOP.roll.sizes.find((x) => x.g === roll.size), f = SHOP.roll.filters.find((x) => x.id === roll.filter);
+  if (!s || !f) return { n: 0, fee: 0 };
+  const n = Math.floor(qty / s.g);
+  return { n, fee: n * (s.fee + (f.fee || 0)) };
+}
+function totals() {   // สูตรเดียวกับในบอท (บอทคิดซ้ำจากราคาใน config.json เสมอ)
+  let items = 0, roll = 0, grams = 0;
+  cart.forEach((l) => {
+    const it = findItem(l.id);
+    if (!it || it.p.price == null) return;
+    items += it.p.price * l.qty;
+    roll += rollInfo(l.qty, l.roll).fee;
+    if (it.p.unit !== "pc") grams += l.qty;
+  });
+  const min = SHOP.roll.freeMinGrams;
+  const freeRoll = roll > 0 && min > 0 && grams >= min;
+  const base = items + (freeRoll ? 0 : roll);
+  const fee = pay === "card" ? Math.round(base * SHOP.cardFeePercent / 100) : 0;
+  const g = SHOP.gift, per = g ? g.perGrams : 0;   // ของแถม: 1 ชิ้นต่อดอกทุก per กรัม
+  const gift = per > 0 && items >= g.minBaht ? Math.floor(grams / per) : 0;
+  return { items, roll, freeRoll, grams, fee, total: base + fee, gift, needG: per > 0 ? per - grams % per : 0 };
+}
+let menuLoaded = false;   // true เมื่อโหลดสินค้าจาก config.json แล้ว
+function saveCart() {
+  if (!menuLoaded) return;   // ยังไม่รู้จักสินค้า อย่าเพิ่งแตะตะกร้าที่จำไว้
+  cart = cart.filter((l) => l && l.qty > 0 && findItem(l.id) && findItem(l.id).p.price != null);
+  store.set("cart", JSON.stringify(cart));
+  const n = cart.length;
+  $("#cartBarText").textContent = n ? t("cBar")(n, baht(totals().total)) : "";
+  $("#cartBar").classList.toggle("show", n > 0 && view !== "cart");
+}
 
 function renderCats() {
   $("#catGrid").innerHTML = CATS.map((c, i) => `
@@ -672,7 +724,8 @@ function renderSearch() {
   const hits = [];
   if (q) CATS.forEach((c) => PRODUCTS[c.id].forEach((p, i) => {
     const name = typeof p.name === "object" ? p.name.th + " " + p.name.en : p.name;
-    const hay = [name, c.label, c.name.th, c.name.en, p.parents || "", ...p.effects.th, ...p.effects.en, ...p.flavors.th, ...p.flavors.en].join(" ").toLowerCase();
+    const words = (v) => v ? [...(v.th || []), ...(v.en || [])] : [];
+    const hay = [name, c.label, c.name.th, c.name.en, p.parents || "", p.ratio || "", ...words(p.effects), ...words(p.flavors)].join(" ").toLowerCase();
     if (hay.includes(q)) hits.push(itemCard(p, c, i));
   }));
   $("#catGrid").style.display = q ? "none" : "";
@@ -738,18 +791,110 @@ function renderDetail() {
   const c = cat(), p = PRODUCTS[c.id][curItem];
   if (!p) return;
   const tags = (a) => `<div class="tags">${a.map((x) => `<span>${esc(x)}</span>`).join("")}</div>`;
+  const stat = (k, v) => v ? `<div><small>${k}</small><b>${esc(v)}</b></div>` : "";
+  const isG = p.unit !== "pc";
   $("#detail").innerHTML = `
     <div class="hero">${picHtml(p, c.ico)}</div>
     <div class="center">
       <span class="badge">${c.label}</span>
       <h1 class="gold">${esc(pick(p.name))}</h1>
       <div class="price gold">${priceHtml(p)}</div>
+      ${p.grow ? `<p class="sub" style="margin:4px 0 0">🌱 ${esc(p.grow)}</p>` : ""}
     </div>
-    <div class="stats"><div><small>THC</small><b>${esc(p.thc)}</b></div><div><small>CBD</small><b>${esc(p.cbd)}</b></div></div>
-    <h2>${t("dAbout")}</h2><div class="box">${esc(pick(p.desc))}</div>
-    <h2>${t("dEffects")}</h2>${tags(p.effects[lang])}
-    <h2>${t("dFlavors")}</h2>${tags(p.flavors[lang])}
-    ${p.parents ? `<h2>${t("dParents")}</h2><div class="box">${esc(p.parents)}</div>` : ""}`;
+    <div class="stats">${stat("THC", p.thc)}${stat("CBD", p.cbd)}${stat(t("dType"), p.ratio)}</div>
+    ${p.desc ? `<h2>${t("dAbout")}</h2><div class="box">${esc(pick(p.desc))}</div>` : ""}
+    ${list(p.effects).length ? `<h2>${t("dEffects")}</h2>${tags(list(p.effects))}` : ""}
+    ${list(p.flavors).length ? `<h2>${t("dFlavors")}</h2>${tags(list(p.flavors))}` : ""}
+    ${p.parents ? `<h2>${t("dParents")}</h2><div class="box">${esc(p.parents)}</div>` : ""}
+    <h2>${t("oTitle")}</h2>
+    ${p.price == null ? `<div class="note">${t("oNoPrice")}</div>` : `<div class="box">
+      <div class="row"><span>${t(isG ? "oQtyG" : "oQtyPc")}</span>
+        <div class="stepper"><button data-q="-1">−</button><b id="oQty"></b><button data-q="1">+</button></div></div>
+      ${isG ? `<label class="consent" style="margin-top:8px"><input type="checkbox" id="oRoll"><span>${t("oRoll")}</span></label>
+      <div id="oRollOpts">
+        <div class="optlabel">${t("oSize")}</div>
+        <div class="opts">${SHOP.roll.sizes.map((s) => `<button data-size="${s.g}">${t("oSizeBtn")(s.g, s.fee)}</button>`).join("")}</div>
+        <div class="optlabel">${t("oFilter")}</div>
+        <div class="opts">${SHOP.roll.filters.map((f) => `<button data-filter="${esc(f.id)}">${esc(pick(f.label))}${f.fee ? ` (+฿${f.fee})` : ""}</button>`).join("")}</div>
+        <p class="sub" style="margin:8px 0 0" id="oRollNote"></p>
+      </div>` : ""}
+      <div class="row tot"><span>${t("oSum")}</span><b class="gold" id="oSum"></b></div>
+      <button class="btn" id="oAdd" style="margin-top:10px">${t("oAdd")}</button>
+    </div>`}`;
+  drawOrder();
+}
+function drawOrder() {   // อัปเดตตัวเลขในกล่องสั่งซื้อของหน้ารายละเอียด
+  const it = PRODUCTS[curCat] && PRODUCTS[curCat][curItem];
+  if (!it || it.price == null || !$("#oQty")) return;
+  const rolling = order.roll && it.unit !== "pc";
+  const r = rollInfo(order.qty, rolling ? { size: order.size, filter: order.filter } : null);
+  $("#oQty").textContent = order.qty;
+  if ($("#oRoll")) {
+    $("#oRoll").checked = order.roll;
+    $("#oRollOpts").style.display = order.roll ? "" : "none";
+    $$("#oRollOpts [data-size]").forEach((b) => b.classList.toggle("on", +b.dataset.size === order.size));
+    $$("#oRollOpts [data-filter]").forEach((b) => b.classList.toggle("on", b.dataset.filter === order.filter));
+    $("#oRollNote").textContent = r.n ? t("oRollNote")(r.n, r.fee) : t("oRollNone");
+  }
+  $("#oSum").textContent = "฿" + baht(it.price * order.qty + r.fee);
+}
+function addToCart() {
+  const it = PRODUCTS[curCat][curItem];
+  if (!it || it.price == null) return;
+  const roll = order.roll && it.unit !== "pc" && rollInfo(order.qty, { size: order.size, filter: order.filter }).n
+    ? { size: order.size, filter: order.filter } : null;
+  const same = cart.find((l) => l.id === it.id && JSON.stringify(l.roll) === JSON.stringify(roll));
+  if (same) same.qty = Math.min(99, same.qty + order.qty); else cart.push({ id: it.id, qty: order.qty, roll });
+  saveCart();
+  $("#oAdd").textContent = t("oAdded");
+  setTimeout(() => { if ($("#oAdd")) $("#oAdd").textContent = t("oAdd"); }, 1400);
+  if (tg && tg.HapticFeedback) { try { tg.HapticFeedback.notificationOccurred("success"); } catch (e) {} }
+}
+function renderCart() {
+  if (!menuLoaded || !cart.length) { $("#cart").innerHTML = `<div class="empty">${t("cEmpty")}</div>`; return; }
+  const tt = totals(), min = SHOP.roll.freeMinGrams;
+  const lines = cart.map((l, i) => {
+    const it = findItem(l.id), p = it.p, r = rollInfo(l.qty, l.roll);
+    const f = l.roll ? SHOP.roll.filters.find((x) => x.id === l.roll.filter) : null;
+    return `<div class="line"><div class="what"><b>${esc(pick(p.name))}</b>
+        <small>฿${baht(p.price)} × ${l.qty} ${t(p.unit === "pc" ? "uPc" : "uG")}</small>
+        ${l.roll ? `<small>${esc(t("cRolled")(l.roll.size, r.n, f ? pick(f.label) : ""))} (+฿${baht(r.fee)})</small>` : ""}</div>
+      <div class="stepper"><button data-cq="${i}:-1">−</button><b>${l.qty}</b><button data-cq="${i}:1">+</button></div>
+      <span class="sum gold">฿${baht(p.price * l.qty)}</span></div>`;
+  }).join("");
+  const giftNote = !SHOP.gift || !tt.grams ? "" : `<div class="note">${tt.gift ? "🎁 " + t("cGift")(esc(pick(SHOP.gift.label)), tt.gift) + " · " : ""}${t("cGiftMore")(tt.needG, esc(pick(SHOP.gift.label)))}</div>`;
+  const sh = SHOP.ship, hour = new Date(Date.now() + 7 * 3600 * 1000).getUTCHours();   // เวลาไทย
+  const isNight = sh.night.fee > 0 && (sh.night.from <= sh.night.to ? hour >= sh.night.from && hour < sh.night.to : hour >= sh.night.from || hour < sh.night.to);
+  const shipLine = method === "pickup" ? "" : `<div class="row"><span>${t("cShip")}</span><small style="text-align:right">${
+    tt.items >= sh.freeMinBaht ? t("shipFree")(sh.freeKm, sh.perKm[0], sh.perKm[1]) : t("shipQuote")(sh.perKm[0], sh.perKm[1], baht(sh.freeMinBaht - tt.items))
+  }${isNight ? "<br>" + t("shipNight")(sh.night.fee) : ""}</small></div>`;
+  const payLabel = (m) => m === "card" ? t("payCard")(SHOP.cardFeePercent) : t({ cash: "payCash", qr: "payQr", btc: "payBtc" }[m]);
+  $("#cart").innerHTML = `${lines}
+    ${giftNote}
+    ${tt.freeRoll ? `<div class="note">${t("cFree")(min)} (−฿${baht(tt.roll)})</div>`
+      : (tt.roll > 0 && min > 0 ? `<div class="note">${t("cMore")(min - tt.grams)}</div>` : "")}
+    ${sh.pickup ? `<h2>${t("cMethod")}</h2>
+    <div class="opts">${["delivery", "pickup"].map((k) => `<button data-method="${k}" class="${method === k ? "on" : ""}">${t(k === "pickup" ? "mPickup" : "mDelivery")}</button>`).join("")}</div>` : ""}
+    <h2>${t("cPay")}</h2>
+    <div class="opts">${SHOP.pays.map((m) => `<button data-pay="${m}" class="${pay === m ? "on" : ""}">${payLabel(m)}</button>`).join("")}</div>
+    <label>${t("cNote")}</label><textarea id="cNote" maxlength="300"></textarea>
+    <div class="box" style="margin-top:14px">
+      <div class="row"><span>${t("cItems")}</span><b>฿${baht(tt.items)}</b></div>
+      ${tt.roll ? `<div class="row"><span>${t("cRoll")}</span><b>${tt.freeRoll ? `<s>฿${baht(tt.roll)}</s> ฿0` : "฿" + baht(tt.roll)}</b></div>` : ""}
+      ${tt.fee ? `<div class="row"><span>${t("cCardFee")(SHOP.cardFeePercent)}</span><b>฿${baht(tt.fee)}</b></div>` : ""}
+      ${shipLine}
+      <div class="row tot"><span>${t(method === "pickup" ? "cTotal" : "cTotalNoShip")}</span><b class="gold">฿${baht(tt.total)}</b></div>
+    </div>
+    <button class="btn" id="cSend">${t("cSend")}</button>
+    <p class="sub" style="margin-top:10px">${t(method === "pickup" ? "cPickupNote" : "cPayNote")}</p>`;
+}
+function sendOrder() {
+  if (!cart.length) return;
+  if (!(inTelegram && tg.sendData)) { alertMsg(t("cOnlyTg")); return; }
+  const data = { order: { items: cart.map((l) => ({ id: l.id, q: l.qty, r: l.roll ? [l.roll.size, l.roll.filter] : 0 })),
+                          pay, method, note: ($("#cNote").value || "").trim().slice(0, 300) }, lang };
+  cart = []; store.set("cart", "[]");
+  try { tg.sendData(JSON.stringify(data)); } catch (e) {}   // Telegram ปิดแอพเอง แล้วบอทส่งสรุปออเดอร์ในแชท
 }
 
 function renderSymptoms() {
@@ -773,8 +918,9 @@ function applyLang() {
   $$("[data-i18n-ph]").forEach((el) => { el.placeholder = t(el.dataset.i18nPh); });
   $$(".lang button").forEach((b) => b.classList.toggle("on", b.dataset.lang === lang));
   renderHome(); renderCats(); renderList(); renderDetail(); renderSearch(); renderMember(); renderSymptoms(); renderTopics();
+  renderCart(); saveCart();
 }
-const TAB_OF = { home: "home", cats: "menu", list: "menu", detail: "menu", learn: "learn", member: "member" };
+const TAB_OF = { home: "home", cats: "menu", list: "menu", detail: "menu", cart: "menu", learn: "learn", member: "member" };
 function seg(which) {   // สลับ วิธีใช้ / ใบ ภ.ท.33 ในหน้าเรียนรู้
   stopAudio();
   $$(".seg button").forEach((b) => b.classList.toggle("on", b.dataset.seg === which));
@@ -787,6 +933,8 @@ function go(v) {
   view = v;
   if (v === "list") renderList();
   if (v === "detail") renderDetail();
+  if (v === "cart") renderCart();
+  saveCart();   // ซ่อน/แสดงแถบตะกร้า
   $$(".view").forEach((el) => el.classList.toggle("on", el.id === "v-" + v));
   $$(".tabbar button").forEach((b) => b.classList.toggle("on", b.dataset.tab === TAB_OF[v]));
   window.scrollTo(0, 0);
@@ -865,15 +1013,38 @@ $("#ptAgain").addEventListener("click", () => {
 
 /* ---- events ---- */
 document.addEventListener("click", (e) => {
-  const el = e.target.closest("[data-go],[data-lang],[data-cat],[data-item],[data-topic],[data-redeem],[data-seg]");
+  const el = e.target.closest("[data-go],[data-lang],[data-cat],[data-item],[data-topic],[data-redeem],[data-seg],[data-q],[data-size],[data-filter],[data-cq],[data-pay],[data-method],#oAdd,#cSend");
   if (!el) return;
   if (el.dataset.go) go(el.dataset.go);
   else if (el.dataset.seg) seg(el.dataset.seg);
+  else if (el.dataset.q) { order.qty = Math.min(99, Math.max(1, order.qty + +el.dataset.q)); drawOrder(); }
+  else if (el.dataset.size) { order.size = +el.dataset.size; drawOrder(); }
+  else if (el.dataset.filter) { order.filter = el.dataset.filter; drawOrder(); }
+  else if (el.id === "oAdd") addToCart();
+  else if (el.dataset.cq) {
+    const [i, d] = el.dataset.cq.split(":").map(Number), note = $("#cNote") ? $("#cNote").value : "";
+    if (cart[i]) cart[i].qty = Math.min(99, cart[i].qty + d);
+    saveCart(); renderCart();
+    if ($("#cNote")) $("#cNote").value = note;
+  }
+  else if (el.dataset.pay || el.dataset.method) {
+    const note = $("#cNote").value;
+    if (el.dataset.pay) pay = el.dataset.pay; else method = el.dataset.method;
+    renderCart(); saveCart(); $("#cNote").value = note;
+  }
+  else if (el.id === "cSend") sendOrder();
   else if (el.dataset.lang) { lang = el.dataset.lang; store.set("lang", lang); applyLang(); }
   else if (el.dataset.cat) { curCat = el.dataset.cat; go("list"); }
-  else if (el.dataset.item) { curCat = el.dataset.icat || curCat; curItem = +el.dataset.item; go("detail"); }
+  else if (el.dataset.item) {
+    curCat = el.dataset.icat || curCat; curItem = +el.dataset.item;
+    order.qty = 1; order.roll = false;
+    go("detail");
+  }
   else if (el.dataset.topic) playTopic(+el.dataset.topic, el);
   else if (el.dataset.redeem) redeem(el.dataset.redeem);
+});
+document.addEventListener("change", (e) => {
+  if (e.target.id === "oRoll") { order.roll = e.target.checked; drawOrder(); }
 });
 document.addEventListener("input", (e) => {
   if (e.target.id === "search") renderSearch();
@@ -906,7 +1077,26 @@ fetch("config.json", { cache: "no-store" }).then((r) => r.ok ? r.json() : null).
   if (Array.isArray(c.rewards)) LOYALTY.rewards = c.rewards.filter((r) => r && r.id && r.cost > 0 && r.label);
   if (Array.isArray(c.promos)) HOME.promos = c.promos.filter((x) => x && x.title);
   if (Array.isArray(c.events)) HOME.events = c.events.filter((x) => x && x.title);
-  renderMember(); renderHome();
+  CATS.forEach((k) => { PRODUCTS[k.id] = ((c.items || {})[k.id] || []).filter((p) => p && p.id && p.name); });
+  const r = c.roll || {};
+  if (Array.isArray(r.sizes) && r.sizes.length) SHOP.roll.sizes = r.sizes.map((s) => ({ g: +s.g, fee: +s.fee || 0 })).filter((s) => s.g > 0);
+  if (Array.isArray(r.filters) && r.filters.length) SHOP.roll.filters = r.filters.filter((f) => f && f.id && f.label);
+  if (r.free_min_grams >= 0) SHOP.roll.freeMinGrams = +r.free_min_grams;
+  const gf = c.gift;
+  SHOP.gift = gf && gf.label && gf.per_grams > 0 ? { perGrams: +gf.per_grams, minBaht: +gf.min_baht || 0, label: gf.label } : null;
+  const dl = c.delivery || {}, ng = dl.night || {};
+  SHOP.ship = { pickup: dl.pickup !== false, freeMinBaht: +dl.free_min_baht || 0, freeKm: +dl.free_km || 0,
+                perKm: Array.isArray(dl.per_km) && dl.per_km.length === 2 ? dl.per_km.map(Number) : [40, 100],
+                night: { from: +ng.from_hour || 0, to: +ng.to_hour || 0, fee: +ng.fee || 0 } };
+  if (!SHOP.ship.pickup) method = "delivery";
+  const pm = c.payments || {};
+  if (Array.isArray(pm.methods) && pm.methods.length) SHOP.pays = pm.methods.filter((m) => ["cash", "qr", "btc", "card"].includes(m));
+  if (!SHOP.pays.length) SHOP.pays = ["cash"];
+  if (pm.card_fee_percent >= 0) SHOP.cardFeePercent = +pm.card_fee_percent;
+  if (!SHOP.pays.includes(pay)) pay = SHOP.pays[0];
+  order.size = SHOP.roll.sizes[0].g; order.filter = SHOP.roll.filters[0].id;
+  menuLoaded = true;
+  applyLang();
 }).catch(() => {});
 </script>
 </body>
